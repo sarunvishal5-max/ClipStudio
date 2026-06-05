@@ -19,21 +19,21 @@
   --radius:10px; --radius-lg:16px;
 }
 html,body { min-height:100vh; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; font-size:13px; line-height:1.6; }
-body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.6; }
+body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); opacity:0.4; pointer-events:none; z-index:1; }
 
-header { display:flex; align-items:center; justify-content:space-between; padding:20px 32px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(10,10,11,0.92); backdrop-filter:blur(12px); z-index:100; }
+header { display:flex; align-items:center; justify-content:space-between; padding:20px 32px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(10,10,11,0.92); backdrop-filter:blur(8px); z-index:20; }
 .logo { font-family:'Fraunces',serif; font-size:22px; font-weight:600; color:var(--accent); letter-spacing:-0.5px; }
 .logo span { color:var(--muted); font-weight:300; font-style:italic; }
 .header-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .header-tag { font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; border:1px solid var(--border2); padding:4px 10px; border-radius:100px; }
 
 .mode-toggle { display:flex; align-items:center; background:var(--surface2); border:1px solid var(--border2); border-radius:100px; padding:3px; gap:2px; }
-.mode-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:100px; border:none; background:transparent; color:var(--muted); font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.2s; letter-spacing:0.04em; text-transform:uppercase; white-space:nowrap; }
+.mode-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:100px; border:none; background:transparent; color:var(--muted); font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.15s; }
 .mode-btn svg { width:13px; height:13px; }
 .mode-btn.active { background:var(--surface); color:var(--text); border:1px solid var(--border2); }
 .mode-btn.active.voice-active { background:rgba(91,143,212,0.15); color:var(--blue); border-color:rgba(91,143,212,0.3); }
 
-main { max-width:960px; margin:0 auto; padding:40px 24px 100px; }
+main { max-width:960px; margin:0 auto; padding:40px 24px 100px; position:relative; z-index:2; }
 .section-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
 .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
@@ -43,16 +43,16 @@ main { max-width:960px; margin:0 auto; padding:40px 24px 100px; }
 .placeholder-inner p { font-size:12px; opacity:0.6; }
 #preview,#recorded { width:100%; height:100%; object-fit:contain; display:none; background:#000; }
 #waveCanvas { position:absolute; inset:0; width:100%; height:100%; display:none; background:#000; }
-#rec-indicator { position:absolute; top:14px; left:14px; display:none; align-items:center; gap:6px; background:rgba(0,0,0,0.7); border-radius:100px; padding:5px 12px; font-size:11px; color:var(--red); letter-spacing:0.06em; backdrop-filter:blur(4px); border:1px solid rgba(224,82,82,0.2); }
+#rec-indicator { position:absolute; top:14px; left:14px; display:none; align-items:center; gap:6px; background:rgba(0,0,0,0.7); border-radius:100px; padding:5px 12px; font-size:11px; color:var(--red); border:1px solid rgba(224,82,82,0.3); }
 #rec-indicator .blink { width:7px; height:7px; border-radius:50%; background:var(--red); animation:blink 1s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 #rec-indicator.voice-mode { color:var(--blue); border-color:rgba(91,143,212,0.3); }
 #rec-indicator.voice-mode .blink { background:var(--blue); }
-#time-overlay { position:absolute; top:14px; right:14px; background:rgba(0,0,0,0.7); border-radius:6px; padding:4px 10px; font-size:13px; font-weight:500; color:var(--text); display:none; backdrop-filter:blur(4px); border:1px solid var(--border2); font-variant-numeric:tabular-nums; }
+#time-overlay { position:absolute; top:14px; right:14px; background:rgba(0,0,0,0.7); border-radius:6px; padding:4px 10px; font-size:13px; font-weight:500; color:var(--text); display:none; backdrop-filter:blur(4px); }
 #voice-label { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11px; color:rgba(91,143,212,0.7); letter-spacing:0.1em; text-transform:uppercase; display:none; pointer-events:none; }
 
 .controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:36px; }
-.btn { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; border-radius:var(--radius); border:1px solid var(--border2); background:var(--surface2); color:var(--text); font-family:'DM Mono',monospace; font-size:12px; cursor:pointer; transition:all 0.15s; letter-spacing:0.02em; white-space:nowrap; }
+.btn { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; border-radius:var(--radius); border:1px solid var(--border2); background:var(--surface2); color:var(--text); font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.15s; }
 .btn:hover:not(:disabled) { background:#222228; border-color:rgba(255,255,255,0.2); }
 .btn:active:not(:disabled) { transform:scale(0.97); }
 .btn:disabled { opacity:0.35; cursor:not-allowed; }
@@ -76,7 +76,7 @@ main { max-width:960px; margin:0 auto; padding:40px 24px 100px; }
 #timeline-progress { height:100%; background:var(--blue); width:0%; transition:width 0.1s linear; }
 #playhead { position:absolute; top:0; width:2px; height:100%; background:var(--red); pointer-events:none; left:0; z-index:10; }
 #playhead::before { content:''; position:absolute; top:0; left:-4px; width:10px; height:10px; background:var(--red); border-radius:50%; }
-.clip-region { position:absolute; top:8px; bottom:14px; border-radius:5px; border:1.5px solid var(--accent); background:rgba(232,213,163,0.08); cursor:default; display:flex; align-items:center; justify-content:center; min-width:16px; overflow:hidden; }
+.clip-region { position:absolute; top:8px; bottom:14px; border-radius:5px; border:1.5px solid var(--accent); background:rgba(232,213,163,0.08); cursor:default; display:flex; align-items:center; justify-content:center; }
 .clip-region.ai-region { border-color:var(--green); background:rgba(76,175,125,0.08); }
 .clip-region-label { font-size:10px; color:var(--accent); letter-spacing:0.04em; white-space:nowrap; overflow:hidden; padding:0 4px; }
 .clip-region.ai-region .clip-region-label { color:var(--green); }
@@ -84,21 +84,22 @@ main { max-width:960px; margin:0 auto; padding:40px 24px 100px; }
 /* clip inputs */
 .clip-input-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:24px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
 .clip-input-row label { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:7px; }
-.clip-input-row input[type=number] { width:72px; padding:6px 10px; background:var(--surface2); border:1px solid var(--border2); border-radius:6px; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; outline:none; transition:border-color 0.15s; }
+.clip-input-row input[type=number] { width:72px; padding:6px 10px; background:var(--surface2); border:1px solid var(--border2); border-radius:6px; color:var(--text); font-family:'DM Mono',monospace; font-size:11px; outline:none; }
 .clip-input-row input[type=number]:focus { border-color:var(--accent2); }
 .hint-text { font-size:11px; color:var(--muted); margin-left:auto; }
 
 /* ── AI Clip panel ── */
 #ai-section { display:none; margin-bottom:32px; }
 .ai-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-.ai-badge { display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); background:var(--green-dim); border:1px solid rgba(76,175,125,0.25); border-radius:100px; padding:3px 10px; }
+.ai-badge { display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); background:var(--green-dim); border:1px solid rgba(76,175,125,0.3); border-radius:100px; padding:4px 10px; }
 
-/* sensitivity controls */
-.ai-controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:16px; }
-.ai-controls label { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:8px; }
-.ai-controls input[type=range] { width:100px; accent-color:var(--green); }
-.ai-controls span { font-size:11px; color:var(--text); min-width:28px; text-align:right; font-variant-numeric:tabular-nums; }
-.ai-controls select { background:var(--surface2); border:1px solid var(--border2); color:var(--text); font-family:'DM Mono',monospace; font-size:11px; border-radius:6px; padding:4px 8px; outline:none; }
+/* AI dropdown selector */
+#ai-clip-selector { display:none; margin-bottom:16px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+.ai-selector-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.ai-selector-row label { font-size:11px; color:var(--muted); white-space:nowrap; }
+.ai-selector-row select { background:var(--surface2); border:1px solid var(--border2); color:var(--text); font-family:'DM Mono',monospace; font-size:11px; border-radius:6px; padding:6px 10px; outline:none; flex:1; min-width:200px; cursor:pointer; }
+.ai-selector-row select:focus { border-color:var(--accent2); }
+.ai-clip-actions { display:flex; gap:8px; align-items:center; }
 
 /* AI progress bar */
 #ai-progress-wrap { display:none; padding:16px; background:var(--surface); border:1px solid rgba(76,175,125,0.2); border-radius:var(--radius); margin-bottom:16px; }
@@ -111,12 +112,11 @@ main { max-width:960px; margin:0 auto; padding:40px 24px 100px; }
 .call-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; transition:border-color 0.15s; }
 .call-card:hover { border-color:rgba(76,175,125,0.3); }
 .call-card-header { display:flex; align-items:center; gap:12px; padding:14px 16px 10px; }
-.call-number { width:32px; height:32px; border-radius:50%; background:var(--green-dim); border:1px solid rgba(76,175,125,0.25); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:500; color:var(--green); flex-shrink:0; }
+.call-number { width:32px; height:32px; border-radius:50%; background:var(--green-dim); border:1px solid rgba(76,175,125,0.25); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--green); font-weight:500; }
 .call-meta { flex:1; min-width:0; }
 .call-title { font-family:'Fraunces',serif; font-style:italic; font-size:14px; color:var(--text); margin-bottom:2px; }
 .call-time-info { font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; display:flex; align-items:center; gap:10px; }
 .call-dur-badge { font-size:10px; color:var(--accent2); background:rgba(200,169,110,0.1); border:1px solid rgba(200,169,110,0.2); border-radius:100px; padding:1px 8px; }
-.call-actions { display:flex; gap:6px; }
 
 /* inline waveform thumbnail for each call */
 .call-wave-wrap { padding:0 16px 4px; }
@@ -144,7 +144,7 @@ main { max-width:960px; margin:0 auto; padding:40px 24px 100px; }
 .clip-mode-tag { font-size:10px; color:var(--blue); opacity:0.7; margin-left:6px; }
 .clip-actions { display:flex; gap:6px; align-items:center; }
 
-footer { text-align:center; padding:20px; border-top:1px solid var(--border); font-size:11px; color:var(--muted); letter-spacing:0.04em; position:fixed; bottom:0; left:0; right:0; background:rgba(10,10,11,0.92); backdrop-filter:blur(8px); }
+footer { text-align:center; padding:20px; border-top:1px solid var(--border); font-size:11px; color:var(--muted); letter-spacing:0.04em; position:fixed; bottom:0; left:0; right:0; background:rgba(10,10,11,0.92); backdrop-filter:blur(8px); z-index:20; }
 
 @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 .fade-up { animation:fadeUp 0.4s ease both; }
@@ -173,11 +173,11 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
   <div class="header-right">
     <div class="mode-toggle" id="modeToggle">
       <button class="mode-btn active" id="camModeBtn" onclick="setMode('camera')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14v-4z"/><path d="M1 20.948V4.557c0-.322.289-.557.645-.557h2.71c.356 0 .645.235.645.557V20.45c0 .321.289.553.645.553h16.71c.356 0 .645-.232.645-.553V4.557"/></svg>
         Camera
       </button>
       <button class="mode-btn" id="voiceModeBtn" onclick="setMode('voice')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         Voice Only
       </button>
     </div>
@@ -190,7 +190,7 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
     <div class="section-label" id="cam-section-label">Camera</div>
     <div id="video-wrap">
       <div class="placeholder-inner" id="placeholder">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14v-4z"/><path d="M1 20.948V4.557c0-.322.289-.557.645-.557h2.71c.356 0 .645.235.645.557V20.45c0 .321.289.553.645.553h16.71c.356 0 .645-.232.645-.553V4.557"/></svg>
         <p>Grant camera access to begin recording</p>
       </div>
       <video id="preview" autoplay muted playsinline></video>
@@ -204,7 +204,7 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
 
   <div class="controls fade-up fade-up-1">
     <button class="btn accent" id="startCamBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14v-4z"/><path d="M1 20.948V4.557c0-.322.289-.557.645-.557h2.71c.356 0 .645.235.645.557V20.45c0 .321.289.553.645.553h16.71c.356 0 .645-.232.645-.553V4.557"/></svg>
       Start Camera
     </button>
     <button class="btn danger-btn" id="recBtn" disabled>
@@ -217,7 +217,7 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
     </button>
     <!-- AI Clip button — appears after recording -->
     <button class="btn ai-btn" id="aiClipBtn" disabled style="display:none">
-      <svg id="aiSpinIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 2a10 10 0 0110 10"/><path d="M12 6v6l4 2"/><path d="M2 12a10 10 0 0110-10"/></svg>
+      <svg id="aiSpinIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 2a10 10 0 0110 10m0 0a10 10 0 11-20 0m0 0a10 10 0 0120 0"/></svg>
       AI Auto-Clip
     </button>
     <span class="time-badge" id="time-display">0:00</span>
@@ -230,35 +230,31 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
     <div class="ai-header">
       <div class="section-label" style="flex:1;margin-bottom:0">
         <span class="ai-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 0l4.24-4.24M1 12h6m6 0h6m-1.78 7.78l-4.24-4.24m-5.08 0l-4.24 4.24"/></svg>
           AI Auto-Clip
         </span>
       </div>
-      <button class="btn" id="reRunAiBtn" style="display:none;font-size:11px;padding:5px 12px">Re-analyze</button>
-    </div>
-
-    <!-- sensitivity settings -->
-    <div class="ai-controls" id="aiControls">
-      <label>
-        Silence threshold
-        <input type="range" id="silenceThresh" min="1" max="30" value="8" oninput="document.getElementById('threshVal').textContent=this.value">
-        <span id="threshVal">8</span>%
-      </label>
-      <label>
-        Min silence gap
-        <input type="range" id="minGap" min="5" max="60" value="15" oninput="document.getElementById('gapVal').textContent=this.value">
-        <span id="gapVal">15</span>s
-      </label>
-      <label>
-        Min call length
-        <input type="range" id="minCall" min="5" max="60" value="10" oninput="document.getElementById('callVal').textContent=this.value">
-        <span id="callVal">10</span>s
-      </label>
     </div>
 
     <div id="ai-progress-wrap">
       <div class="ai-progress-label" id="aiProgressLabel">Analyzing audio…</div>
       <div class="ai-progress-bar"><div class="ai-progress-fill" id="aiProgressFill"></div></div>
+    </div>
+
+    <!-- Dropdown selector for clips -->
+    <div id="ai-clip-selector">
+      <div class="ai-selector-row">
+        <label>Select clip:</label>
+        <select id="aiClipDropdown" onchange="playSelectedClip()">
+          <option value="">-- Choose a clip --</option>
+        </select>
+        <div class="ai-clip-actions">
+          <button class="btn ai-btn" id="downloadSelectedBtn" style="padding:7px 14px;font-size:11px;display:none" onclick="downloadSelectedClip()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="ai-calls-list"></div>
@@ -327,8 +323,10 @@ const aiCallsList     = document.getElementById('ai-calls-list');
 const aiProgressWrap  = document.getElementById('ai-progress-wrap');
 const aiProgressFill  = document.getElementById('aiProgressFill');
 const aiProgressLabel = document.getElementById('aiProgressLabel');
-const reRunAiBtn      = document.getElementById('reRunAiBtn');
 const aiSpinIcon      = document.getElementById('aiSpinIcon');
+const aiClipSelector  = document.getElementById('ai-clip-selector');
+const aiClipDropdown  = document.getElementById('aiClipDropdown');
+const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
 
 /* ════════════════════════════════════════
    STATE
@@ -338,7 +336,7 @@ let recording=false, recInterval=null, recSeconds=0;
 let clips=[], nextId=1, playInterval=null;
 let currentMode='camera', isVoiceMode=false;
 let audioCtx=null, analyser=null, waveAF=null, waveCtx=null;
-let aiCalls=[];        // [{id,start,end,blobUrl,label}]
+let aiCalls=[];
 let nextAiId=1;
 
 /* ════════════════════════════════════════
@@ -356,12 +354,12 @@ function setMode(mode){
   camModeBtn.className ='mode-btn'+(mode==='camera'?' active':'');
   voiceModeBtn.className='mode-btn'+(mode==='voice'?' active voice-active':'');
   document.getElementById('cam-section-label').textContent=isVoiceMode?'Audio':'Camera';
-  if(stream){ stopWaveform(); stream.getTracks().forEach(t=>t.stop()); stream=null; preview.srcObject=null; preview.style.display='none'; waveCanvas.style.display='none'; placeholder.style.display='flex'; recBtn.disabled=true; playBtn.disabled=true; recordedUrl=null; recorded.style.display='none'; timelineSection.style.display='none'; timeOverlay.style.display='none'; aiSection.style.display='none'; aiClipBtn.style.display='none'; }
+  if(stream){ stopWaveform(); stream.getTracks().forEach(t=>t.stop()); stream=null; preview.srcObject=null; preview.style.display='none'; waveCanvas.style.display='none'; placeholder.style.display='flex'; }
   if(isVoiceMode){
-    startCamBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg> Start Mic`;
+    startCamBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Start Mic`;
     setStatus('Voice Only mode — click "Start Mic" to begin.');
   } else {
-    startCamBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg> Start Camera`;
+    startCamBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14v-4z"/><path d="M1 20.948V4.557c0-.322.289-.557.645-.557h2.71c.356 0 .645.235.645.557V20.45c0 .321.289.553.645.553h16.71c.356 0 .645-.232.645-.553V4.557"/></svg> Start Camera`;
     setStatus('Click "Start Camera" to begin.');
   }
 }
@@ -385,7 +383,7 @@ startCamBtn.onclick = async () => {
 };
 
 /* ════════════════════════════════════════
-   WAVEFORM VISUALIZER
+   WAVEFORM VISUALIZER (SLOWER + ALTERNATING COLORS)
 ════════════════════════════════════════ */
 function resizeWaveCanvas(){
   const wrap=document.getElementById('video-wrap');
@@ -403,7 +401,9 @@ function initWaveform(){
 }
 function stopWaveform(){ if(waveAF){cancelAnimationFrame(waveAF);waveAF=null;} if(audioCtx){audioCtx.close();audioCtx=null;analyser=null;} }
 
+let waveAnimCounter=0;
 function drawWaveform(){
+  waveAnimCounter++;
   waveAF=requestAnimationFrame(drawWaveform);
   if(!analyser||!waveCtx) return;
   const W=waveCanvas.width/devicePixelRatio, H=waveCanvas.height/devicePixelRatio;
@@ -414,11 +414,17 @@ function drawWaveform(){
   for(let i=1;i<4;i++){ const y=(H/4)*i; waveCtx.beginPath(); waveCtx.moveTo(0,y); waveCtx.lineTo(W,y); waveCtx.stroke(); }
   waveCtx.strokeStyle='rgba(255,255,255,0.06)'; waveCtx.beginPath(); waveCtx.moveTo(0,H/2); waveCtx.lineTo(W,H/2); waveCtx.stroke();
   let sum=0; for(let i=0;i<bufLen;i++){const v=(data[i]-128)/128;sum+=v*v;} const rms=Math.sqrt(sum/bufLen);
-  const color=recording?'#5b8fd4':'#c8a96e';
+  
+  // Alternating colors: switch every 30 frames (slower animation)
+  const colorPhase=Math.floor(waveAnimCounter/30)%2;
+  const color1=recording?'#5b8fd4':'#c8a96e';      // blue or gold
+  const color2=recording?'#e8d5a3':'#4caf7d';      // accent or green
+  const color=colorPhase===0?color1:color2;
+  
   const sliceW=W/bufLen;
   for(let pass=0;pass<2;pass++){
     waveCtx.beginPath();
-    if(pass===0){ waveCtx.shadowColor=color; waveCtx.shadowBlur=18+rms*40; waveCtx.strokeStyle=recording?`rgba(91,143,212,${Math.min(rms*4,0.5)+0.15})`:`rgba(200,169,110,${Math.min(rms*4,0.5)+0.15})`; waveCtx.lineWidth=1.5; }
+    if(pass===0){ waveCtx.shadowColor=color; waveCtx.shadowBlur=18+rms*40; waveCtx.strokeStyle=recording?`rgba(91,143,212,${Math.min(rms*4,0.5)+0.15})`:`rgba(200,169,110,${Math.min(rms*4,0.5)+0.15})`;waveCtx.lineWidth=2.5; }
     else{ waveCtx.shadowBlur=0; waveCtx.strokeStyle=color; waveCtx.lineWidth=1.5; }
     let x=0;
     for(let i=0;i<bufLen;i++){const v=data[i]/128.0,y=(v*H)/2;if(i===0)waveCtx.moveTo(x,y);else waveCtx.lineTo(x,y);x+=sliceW;}
@@ -555,9 +561,9 @@ function renderClips(){
   dlAllBtn.style.display='inline-flex'; clipsList.innerHTML='';
   clips.forEach(c=>{
     const el=document.createElement('div'); el.className='clip-item'; const cid='c'+c.id;
-    const thumbHtml=c.voiceMode?`<div class="clip-thumb audio-thumb"><svg class="audio-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg></div>`:`<div class="clip-thumb"><canvas id="${cid}" width="80" height="45"></canvas></div>`;
+    const thumbHtml=c.voiceMode?`<div class="clip-thumb audio-thumb"><svg class="audio-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div>`:`<div class="clip-thumb"><canvas id="c${c.id}"></canvas></div>`;
     const modeTag=c.voiceMode?`<span class="clip-mode-tag">· voice</span>`:'';
-    el.innerHTML=`${thumbHtml}<div class="clip-meta"><div class="clip-name">${c.label}</div><div class="clip-time">${fmt(c.start)} → ${fmt(c.end)}<span class="clip-duration">${(c.end-c.start).toFixed(1)}s</span>${modeTag}</div></div><div class="clip-actions"><button class="btn" title="Preview" onclick="previewClip(${c.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polygon points="5 3 19 12 5 21 5 3"/></svg></button><button class="btn" onclick="downloadClip(${c.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download</button><button class="btn ghost-del" title="Remove" onclick="removeClip(${c.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>`;
+    el.innerHTML=`${thumbHtml}<div class="clip-meta"><div class="clip-name">${c.label}</div><div class="clip-time">${fmt(c.start)} → ${fmt(c.end)}<span class="clip-duration">${(c.end-c.start).toFixed(1)}s</span>${modeTag}</div></div><div class="clip-actions"><button class="btn" onclick="previewClip(${c.id})" style="padding:6px 10px;font-size:10px"><span style="margin-right:4px">▶</span>Play</button><button class="btn" onclick="downloadClip(${c.id})" style="padding:6px 10px;font-size:10px"><span style="margin-right:4px">↓</span>DL</button><button class="btn ghost-del" onclick="removeClip(${c.id})" title="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></div>`;
     clipsList.appendChild(el);
     if(!c.voiceMode) drawThumb(c,cid);
   });
@@ -588,16 +594,14 @@ window.downloadClip=async id=>{
   try{const blob=await extractClip(c.start,c.end,c.voiceMode);download(blob,c.label.replace(' ','-').toLowerCase()+'.webm');setStatus(`${c.label} downloaded.`);}
   catch(e){setStatus('Export failed — try Chrome for best compatibility.');}
 };
-dlAllBtn.onclick=async()=>{for(const c of clips){setStatus(`Exporting ${c.label}…`);try{const blob=await extractClip(c.start,c.end,c.voiceMode);await new Promise(r=>setTimeout(r,250));download(blob,c.label.replace(' ','-').toLowerCase()+'.webm');}catch(e){}}setStatus(`All ${clips.length} clips downloaded.`);};
+dlAllBtn.onclick=async()=>{for(const c of clips){setStatus(`Exporting ${c.label}…`);try{const blob=await extractClip(c.start,c.end,c.voiceMode);await new Promise(r=>setTimeout(r,250));download(blob,c.label.replace(' ','-').toLowerCase()+'.webm');}catch(e){}}setStatus('All clips exported.');};
 
 /* ════════════════════════════════════════
-   ★  AI AUTO-CLIP ENGINE  ★
-   Decodes PCM via OfflineAudioContext,
-   scans for silence gaps between calls,
-   returns [{start,end}] boundaries.
+   ★  AI AUTO-CLIP ENGINE (SIMPLIFIED)  ★
+   Auto-detect calls, populate dropdown,
+   ready to play & download immediately.
 ════════════════════════════════════════ */
 aiClipBtn.onclick=()=>runAiClip();
-reRunAiBtn.onclick=()=>runAiClip();
 
 async function runAiClip(){
   if(!recordedBlob) return;
@@ -606,15 +610,15 @@ async function runAiClip(){
   aiSection.style.display='block';
   aiProgressWrap.style.display='block';
   aiProgressFill.style.width='0%';
-  aiProgressLabel.textContent='Decoding audio…';
+  aiProgressLabel.textContent='Analyzing audio…';
   aiCallsList.innerHTML='';
-  reRunAiBtn.style.display='none';
+  aiClipSelector.style.display='none';
+  downloadSelectedBtn.style.display='none';
 
   try{
     // 1. decode to raw PCM
     setProgress(10,'Decoding audio…');
     const arrayBuf=await recordedBlob.arrayBuffer();
-    const offCtx=new OfflineAudioContext(1,1,44100); // mono, dummy length
     const decoded=await new Promise((res,rej)=>{
       const tmp=new(window.AudioContext||window.webkitAudioContext)();
       tmp.decodeAudioData(arrayBuf.slice(0),buf=>{tmp.close();res(buf);},e=>{tmp.close();rej(e);});
@@ -622,13 +626,13 @@ async function runAiClip(){
 
     setProgress(30,'Analyzing silence gaps…');
     const sr=decoded.sampleRate;
-    const pcm=decoded.getChannelData(0); // Float32Array
+    const pcm=decoded.getChannelData(0);
     const dur=decoded.duration;
 
-    // parameters from sliders
-    const silenceThreshPct=parseFloat(document.getElementById('silenceThresh').value)/100;
-    const minGapSec=parseFloat(document.getElementById('minGap').value);
-    const minCallSec=parseFloat(document.getElementById('minCall').value);
+    // Default parameters (no sliders)
+    const silenceThreshPct=0.08;      // 8% threshold
+    const minGapSec=15;               // 15 second gap minimum
+    const minCallSec=10;              // 10 second call minimum
 
     // compute RMS in 50ms windows
     const winSamples=Math.floor(sr*0.05);
@@ -644,16 +648,13 @@ async function runAiClip(){
 
     setProgress(55,'Detecting call boundaries…');
 
-    // dynamic threshold: % of peak RMS
     const thresh=maxRms*silenceThreshPct;
     const minGapWins=Math.ceil(minGapSec/(dur/numWins));
     const minCallWins=Math.ceil(minCallSec/(dur/numWins));
 
-    // scan: mark windows as silent or not
     const silent=new Uint8Array(numWins);
     for(let w=0;w<numWins;w++) silent[w]=rmsArr[w]<thresh?1:0;
 
-    // merge short non-silent blips inside silence (smooth noise)
     const smoothRadius=Math.ceil(0.2/(dur/numWins));
     const smoothed=silent.slice();
     for(let w=smoothRadius;w<numWins-smoothRadius;w++){
@@ -661,7 +662,6 @@ async function runAiClip(){
       smoothed[w]=s>(smoothRadius*2*0.6)?1:0;
     }
 
-    // find contiguous non-silent runs → candidate calls
     const segments=[];
     let inCall=false, callStart=0;
     for(let w=0;w<numWins;w++){
@@ -673,7 +673,6 @@ async function runAiClip(){
     }
     if(inCall&&numWins-callStart>=minCallWins) segments.push({sw:callStart,ew:numWins});
 
-    // merge segments separated by gaps < minGapSec
     const merged=[];
     for(const seg of segments){
       if(merged.length&&(seg.sw-merged[merged.length-1].ew)<minGapWins){
@@ -683,7 +682,6 @@ async function runAiClip(){
 
     setProgress(75,'Slicing call audio…');
 
-    // convert windows → seconds, add small padding
     const winDur=dur/numWins;
     const pad=0.3;
     const calls=merged.map(s=>({
@@ -693,8 +691,7 @@ async function runAiClip(){
 
     if(!calls.length){
       setProgress(100,'Done — no distinct calls found.');
-      aiCallsList.innerHTML=`<div class="empty-state">No distinct call segments detected. Try lowering the Silence Threshold slider, or the Min Silence Gap, and hit Re-analyze.</div>`;
-      reRunAiBtn.style.display='inline-flex';
+      aiCallsList.innerHTML=`<div class="empty-state">No distinct call segments detected. Try re-recording with clearer audio separation.</div>`;
       aiClipBtn.disabled=false; aiSpinIcon.classList.remove('spinning');
       aiProgressWrap.style.display='none';
       return;
@@ -702,7 +699,6 @@ async function runAiClip(){
 
     setProgress(85,`Found ${calls.length} call${calls.length>1?'s':''} — extracting audio…`);
 
-    // extract blob URLs for each call
     aiCalls=[];
     for(let i=0;i<calls.length;i++){
       const c=calls[i];
@@ -712,16 +708,17 @@ async function runAiClip(){
     }
 
     setProgress(100,'Analysis complete!');
+    populateClipDropdown();
     renderAiCalls();
     renderTimelineClips();
-    reRunAiBtn.style.display='inline-flex';
-    setStatus(`AI found ${aiCalls.length} call${aiCalls.length>1?'s':''} — listen and download below.`);
+    aiClipSelector.style.display='block';
+    downloadSelectedBtn.style.display='inline-flex';
+    setStatus(`AI found ${aiCalls.length} call${aiCalls.length>1?'s':''} — select from dropdown to play or download.`);
 
   }catch(err){
     console.error(err);
     setStatus('AI analysis failed — try Chrome or check console.');
     aiCallsList.innerHTML=`<div class="empty-state">Analysis error: ${err.message}. Make sure you're using Chrome.</div>`;
-    reRunAiBtn.style.display='inline-flex';
   }
 
   aiProgressWrap.style.display='none';
@@ -734,8 +731,42 @@ function setProgress(pct,label){
   aiProgressLabel.textContent=label;
 }
 
-/* Extract a segment from recordedBlob and return a blob URL.
-   Uses OfflineAudioContext for fast re-encoding. */
+function populateClipDropdown(){
+  aiClipDropdown.innerHTML='<option value="">-- Choose a clip --</option>';
+  aiCalls.forEach(c=>{
+    const opt=document.createElement('option');
+    opt.value=c.id;
+    opt.textContent=`${c.label} (${fmt(c.start)} → ${fmt(c.end)})`;
+    aiClipDropdown.appendChild(opt);
+  });
+}
+
+function playSelectedClip(){
+  const id=parseInt(aiClipDropdown.value);
+  if(!id) return;
+  const c=aiCalls.find(x=>x.id===id);
+  if(!c) return;
+  if(isVoiceMode){waveCanvas.style.display='block';recorded.style.display='none';}
+  else{recorded.style.display='block';preview.style.display='none';}
+  recorded.src=c.blobUrl;
+  recorded.currentTime=0;
+  recorded.play();
+  startPlayhead();
+  setStatus(`Playing ${c.label}…`);
+}
+
+function downloadSelectedClip(){
+  const id=parseInt(aiClipDropdown.value);
+  if(!id) return;
+  const c=aiCalls.find(x=>x.id===id);
+  if(!c) return;
+  const a=document.createElement('a');
+  a.href=c.blobUrl;
+  a.download=`call-${c.id}.webm`;
+  a.click();
+  setStatus(`${c.label} downloading…`);
+}
+
 function extractCallBlob(start,end){
   return new Promise((resolve,reject)=>{
     const v=document.createElement('audio');
@@ -767,9 +798,6 @@ function extractCallBlob(start,end){
   });
 }
 
-/* ════════════════════════════════════════
-   RENDER AI CALLS
-════════════════════════════════════════ */
 function renderAiCalls(){
   aiCallsList.innerHTML='';
   if(!aiCalls.length) return;
@@ -786,15 +814,6 @@ function renderAiCalls(){
             <span class="call-dur-badge">${dur}s</span>
           </div>
         </div>
-        <div class="call-actions">
-          <button class="btn ai-btn" onclick="downloadAiCall(${c.id})" style="padding:7px 14px;font-size:11px">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download
-          </button>
-          <button class="btn ghost-del" onclick="removeAiCall(${c.id})" title="Remove">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          </button>
-        </div>
       </div>
       <div class="call-wave-wrap">
         <canvas class="call-wave-canvas" id="cwave-${c.id}" height="36"></canvas>
@@ -803,12 +822,10 @@ function renderAiCalls(){
         <audio class="call-audio" controls src="${c.blobUrl}" preload="none"></audio>
       </div>`;
     aiCallsList.appendChild(card);
-    // draw static mini waveform thumbnail for this call
     drawCallWave(c);
   });
 }
 
-/* Draw a static waveform thumbnail by decoding the clip blob */
 async function drawCallWave(c){
   const canvas=document.getElementById('cwave-'+c.id);
   if(!canvas) return;
@@ -835,18 +852,6 @@ async function drawCallWave(c){
     ctx2.stroke();
   }catch(e){ ctx2.fillStyle='rgba(76,175,125,0.3)'; ctx2.fillRect(0,17,W,2); }
 }
-
-window.downloadAiCall=id=>{
-  const c=aiCalls.find(x=>x.id===id); if(!c) return;
-  const a=document.createElement('a'); a.href=c.blobUrl; a.download=`call-${c.id}.webm`; a.click();
-  setStatus(`Call ${c.id} downloading…`);
-};
-
-window.removeAiCall=id=>{
-  aiCalls=aiCalls.filter(x=>x.id!==id);
-  renderAiCalls(); renderTimelineClips();
-  if(!aiCalls.length) aiCallsList.innerHTML=`<div class="empty-state">All calls removed. Hit Re-analyze to start over.</div>`;
-};
 
 /* ════════════════════════════════════════
    MANUAL CLIP EXPORT
