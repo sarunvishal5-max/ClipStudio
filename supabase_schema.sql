@@ -18,6 +18,10 @@ create table if not exists public.calls (
 create index if not exists calls_user_created_idx
   on public.calls (user_id, created_at desc);
 
+-- Table privileges for the API roles (RLS still restricts rows).
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on public.calls to authenticated;
+
 -- 2) Row level security -----------------------------------------
 alter table public.calls enable row level security;
 
