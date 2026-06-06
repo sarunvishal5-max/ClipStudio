@@ -3,115 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClipStudio — Record & Export</title>
+<title>Valemont Sales Lab — Recording Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg:#0a0a0b; --surface:#111113; --surface2:#18181c;
-  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.12);
-  --text:#f0ede8; --muted:#7a7872; --accent:#e8d5a3; --accent2:#c8a96e;
-  --red:#e05252; --red-dim:rgba(224,82,82,0.15);
-  --blue:#5b8fd4; --blue-dim:rgba(91,143,212,0.12);
-  --green:#4caf7d; --green-dim:rgba(76,175,125,0.12);
-  --radius:10px; --radius-lg:16px;
-}
-html,body { min-height:100vh; background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; font-size:13px; line-height:1.6; }
-body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); opacity:0.4; pointer-events:none; z-index:1; }
+/* ── Studio-page overrides (replaces index-specific overrides) ── */
 
-header { display:flex; align-items:center; justify-content:space-between; padding:20px 32px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(10,10,11,0.92); backdrop-filter:blur(8px); z-index:20; }
-.logo { font-family:'Fraunces',serif; font-size:22px; font-weight:600; color:var(--accent); letter-spacing:-0.5px; }
-.logo span { color:var(--muted); font-weight:300; font-style:italic; }
-.header-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.header-tag { font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; border:1px solid var(--border2); padding:4px 10px; border-radius:100px; }
+/* Remap button hover to navy palette */
+.btn:hover:not(:disabled) { background: var(--surface3); border-color: rgba(99,140,210,0.35); }
 
-.mode-toggle { display:flex; align-items:center; background:var(--surface2); border:1px solid var(--border2); border-radius:100px; padding:3px; gap:2px; }
-.mode-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:100px; border:none; background:transparent; color:var(--muted); font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.15s; }
+/* Accent button text is now white (blue bg) */
+.btn.accent { color: #ffffff; }
+
+.mode-toggle { display:flex; align-items:center; background:rgba(5,8,15,0.6); border:1px solid var(--border2); border-radius:10px; padding:3px; gap:2px; }
+.mode-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:8px; border:none; background:transparent; color:var(--muted); font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.15s; }
 .mode-btn svg { width:13px; height:13px; }
-.mode-btn.active { background:var(--surface); color:var(--text); border:1px solid var(--border2); }
+.mode-btn.active { background:rgba(35,81,164,0.22); color:var(--text); border:1px solid rgba(54,101,204,0.3); }
 .mode-btn.active.voice-active { background:rgba(91,143,212,0.15); color:var(--blue); border-color:rgba(91,143,212,0.3); }
 
 main { max-width:960px; margin:0 auto; padding:40px 24px 100px; position:relative; z-index:2; }
-.section-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+.section-label { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:10px; font-family:'DM Mono',monospace; }
 .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
 #video-wrap { position:relative; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; aspect-ratio:16/9; margin-bottom:20px; display:flex; align-items:center; justify-content:center; }
 .placeholder-inner { text-align:center; color:var(--muted); }
-.placeholder-inner svg { width:48px; height:48px; margin-bottom:12px; opacity:0.3; }
-.placeholder-inner p { font-size:12px; opacity:0.6; }
+.placeholder-inner svg { width:56px; height:56px; margin-bottom:14px; opacity:0.25; }
+.placeholder-inner p { font-size:12px; opacity:0.7; }
 #preview,#recorded { width:100%; height:100%; object-fit:contain; display:none; background:#000; }
 #waveCanvas { position:absolute; inset:0; width:100%; height:100%; display:none; background:#000; }
-#rec-indicator { position:absolute; top:14px; left:14px; display:none; align-items:center; gap:6px; background:rgba(0,0,0,0.7); border-radius:100px; padding:5px 12px; font-size:11px; color:var(--red); border:1px solid rgba(224,82,82,0.3); }
+#rec-indicator { position:absolute; top:14px; left:14px; display:none; align-items:center; gap:6px; background:rgba(0,0,0,0.7); border-radius:100px; padding:5px 12px; font-size:11px; color:var(--red); border:1px solid rgba(224,82,82,0.3); font-family:'DM Mono',monospace; }
 #rec-indicator .blink { width:7px; height:7px; border-radius:50%; background:var(--red); animation:blink 1s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 #rec-indicator.voice-mode { color:var(--blue); border-color:rgba(91,143,212,0.3); }
 #rec-indicator.voice-mode .blink { background:var(--blue); }
-#time-overlay { position:absolute; top:14px; right:14px; background:rgba(0,0,0,0.7); border-radius:6px; padding:4px 10px; font-size:13px; font-weight:500; color:var(--text); display:none; backdrop-filter:blur(4px); }
-#voice-label { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11px; color:rgba(91,143,212,0.7); letter-spacing:0.1em; text-transform:uppercase; display:none; pointer-events:none; }
+#time-overlay { position:absolute; top:14px; right:14px; background:rgba(0,0,0,0.7); border-radius:8px; padding:4px 10px; font-size:13px; font-weight:600; color:var(--text); display:none; backdrop-filter:blur(4px); font-family:'DM Mono',monospace; border:1px solid rgba(99,140,210,0.15); }
+#voice-label { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11px; color:rgba(91,143,212,0.7); letter-spacing:0.12em; text-transform:uppercase; display:none; pointer-events:none; font-family:'DM Mono',monospace; }
 
 .controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:36px; }
-.btn { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; border-radius:var(--radius); border:1px solid var(--border2); background:var(--surface2); color:var(--text); font-family:'DM Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.15s; }
-.btn:hover:not(:disabled) { background:#222228; border-color:rgba(255,255,255,0.2); }
+.btn { display:inline-flex; align-items:center; gap:7px; padding:8px 16px; border-radius:var(--radius); border:1px solid var(--border2); background:var(--surface2); color:var(--text); font-family:'Inter',sans-serif; font-size:12px; cursor:pointer; transition:all 0.15s; font-weight:500; }
 .btn:active:not(:disabled) { transform:scale(0.97); }
 .btn:disabled { opacity:0.35; cursor:not-allowed; }
-.btn.accent { background:var(--accent); color:#0a0a0b; border-color:var(--accent); font-weight:500; }
-.btn.accent:hover:not(:disabled) { background:var(--accent2); border-color:var(--accent2); }
-.btn.danger-btn { background:var(--red-dim); border-color:rgba(224,82,82,0.3); color:var(--red); }
-.btn.danger-btn:hover:not(:disabled) { background:rgba(224,82,82,0.25); }
 .btn.ghost-del { background:transparent; border-color:transparent; color:var(--muted); padding:6px 10px; }
 .btn.ghost-del:hover:not(:disabled) { background:var(--red-dim); color:var(--red); border-color:rgba(224,82,82,0.2); }
-.btn.ai-btn { background:rgba(76,175,125,0.12); border-color:rgba(76,175,125,0.35); color:var(--green); font-weight:500; }
-.btn.ai-btn:hover:not(:disabled) { background:rgba(76,175,125,0.22); border-color:rgba(76,175,125,0.55); }
 .btn svg { width:15px; height:15px; flex-shrink:0; }
-.time-badge { margin-left:auto; font-size:14px; color:var(--muted); font-variant-numeric:tabular-nums; letter-spacing:0.05em; }
+.time-badge { margin-left:auto; font-size:14px; color:var(--muted); font-variant-numeric:tabular-nums; letter-spacing:0.05em; font-family:'DM Mono',monospace; }
 
-#status { font-size:11px; color:var(--muted); margin-top:-26px; margin-bottom:28px; min-height:16px; letter-spacing:0.02em; }
+#status { font-size:11px; color:var(--muted); margin-top:-26px; margin-bottom:28px; min-height:16px; letter-spacing:0.02em; font-family:'DM Mono',monospace; }
 
 /* ── timeline ── */
 #timeline-section { display:none; }
 #timeline-bar { position:relative; height:72px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; cursor:crosshair; margin-bottom:16px; }
 #timeline-track { position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--border2); }
-#timeline-progress { height:100%; background:var(--blue); width:0%; transition:width 0.1s linear; }
+#timeline-progress { height:100%; background:var(--accent); width:0%; transition:width 0.1s linear; }
 #playhead { position:absolute; top:0; width:2px; height:100%; background:var(--red); pointer-events:none; left:0; z-index:10; }
 #playhead::before { content:''; position:absolute; top:0; left:-4px; width:10px; height:10px; background:var(--red); border-radius:50%; }
-.clip-region { position:absolute; top:8px; bottom:14px; border-radius:5px; border:1.5px solid var(--accent); background:rgba(232,213,163,0.08); cursor:default; display:flex; align-items:center; justify-content:center; }
-.clip-region.ai-region { border-color:var(--green); background:rgba(76,175,125,0.08); }
-.clip-region-label { font-size:10px; color:var(--accent); letter-spacing:0.04em; white-space:nowrap; overflow:hidden; padding:0 4px; }
+.clip-region { position:absolute; top:8px; bottom:14px; border-radius:5px; border:1.5px solid var(--accent); background:rgba(54,101,204,0.08); cursor:default; display:flex; align-items:center; justify-content:center; }
+.clip-region.ai-region { border-color:var(--green); background:rgba(61,184,122,0.08); }
+.clip-region-label { font-size:10px; color:var(--accent); letter-spacing:0.04em; white-space:nowrap; overflow:hidden; padding:0 4px; font-family:'DM Mono',monospace; }
 .clip-region.ai-region .clip-region-label { color:var(--green); }
 
 /* manual clip inputs */
 .clip-input-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:24px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
-.clip-input-row label { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:7px; }
+.clip-input-row label { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:7px; font-family:'DM Mono',monospace; }
 .clip-input-row input[type=number] { width:72px; padding:6px 10px; background:var(--surface2); border:1px solid var(--border2); border-radius:6px; color:var(--text); font-family:'DM Mono',monospace; font-size:11px; outline:none; }
-.clip-input-row input[type=number]:focus { border-color:var(--accent2); }
-.hint-text { font-size:11px; color:var(--muted); margin-left:auto; }
+.clip-input-row input[type=number]:focus { border-color:rgba(54,101,204,0.5); }
+.hint-text { font-size:11px; color:var(--muted); margin-left:auto; font-family:'DM Mono',monospace; }
+
+/* ── Checkbox styles for merge feature ── */
+.cb-cell { width:36px; }
+input.call-cb { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; }
+table#calls-table tbody tr.selected-row { background:rgba(35,81,164,0.1); outline:1px solid rgba(54,101,204,0.25); outline-offset:-1px; }
+table#calls-table tbody tr.selected-row:hover { background:rgba(35,81,164,0.15); }
+
+/* Merge button */
+#mergeBtn { display:none; }
+#mergeBtn .merge-count { background:rgba(255,255,255,0.15); border-radius:100px; padding:1px 7px; font-size:10px; margin-left:2px; }
+
+/* Re-record button */
+#reRecordBtn { display:none; }
 
 /* ── AI progress ── */
-#ai-progress-wrap { display:none; padding:16px; background:var(--surface); border:1px solid rgba(76,175,125,0.2); border-radius:var(--radius); margin-bottom:16px; }
-.ai-progress-label { font-size:11px; color:var(--green); margin-bottom:8px; letter-spacing:0.04em; }
+#ai-progress-wrap { display:none; padding:16px 20px; background:var(--surface); border:1px solid rgba(61,184,122,0.18); border-radius:var(--radius); margin-bottom:16px; }
+.ai-progress-label { font-size:11px; color:var(--green); margin-bottom:8px; letter-spacing:0.06em; font-family:'DM Mono',monospace; }
 .ai-progress-bar { height:3px; background:var(--border2); border-radius:2px; overflow:hidden; }
-.ai-progress-fill { height:100%; background:var(--green); border-radius:2px; transition:width 0.2s ease; width:0%; }
+.ai-progress-fill { height:100%; background:linear-gradient(90deg,var(--green),#4fd492); border-radius:2px; transition:width 0.2s ease; width:0%; }
 
 /* ── AI section ── */
 #ai-section { display:none; margin-bottom:32px; }
-.ai-badge { display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--green); background:var(--green-dim); border:1px solid rgba(76,175,125,0.3); border-radius:100px; padding:4px 10px; }
+.ai-badge { display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--green); background:var(--green-dim); border:1px solid rgba(61,184,122,0.3); border-radius:100px; padding:5px 12px; font-family:'DM Mono',monospace; }
 
 /* ── Calls table ── */
-#calls-table-wrap { overflow-x:auto; }
+#calls-table-wrap { overflow-x:auto; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); }
 table#calls-table { width:100%; border-collapse:collapse; font-size:11px; }
 table#calls-table thead tr { border-bottom:1px solid var(--border2); }
-table#calls-table th { padding:8px 12px; text-align:left; color:var(--muted); font-weight:400; letter-spacing:0.08em; text-transform:uppercase; font-size:10px; white-space:nowrap; }
+table#calls-table th { padding:10px 14px; text-align:left; color:var(--muted); font-weight:500; letter-spacing:0.1em; text-transform:uppercase; font-size:10px; white-space:nowrap; font-family:'DM Mono',monospace; }
 table#calls-table tbody tr { border-bottom:1px solid var(--border); transition:background 0.1s; }
-table#calls-table tbody tr:hover { background:var(--surface2); }
-table#calls-table td { padding:10px 12px; vertical-align:middle; }
-.td-num { color:var(--green); font-weight:500; width:32px; }
-.td-time { color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
-.td-dur { color:var(--accent2); white-space:nowrap; }
+table#calls-table tbody tr:last-child { border-bottom:none; }
+table#calls-table tbody tr:hover { background:rgba(35,81,164,0.06); }
+table#calls-table td { padding:11px 14px; vertical-align:middle; }
+.td-num { color:var(--green); font-weight:600; width:32px; font-family:'DM Mono',monospace; }
+.td-time { color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; font-family:'DM Mono',monospace; }
+.td-dur { color:var(--accent); white-space:nowrap; font-family:'DM Mono',monospace; }
 .td-wave { width:180px; }
-.td-wave canvas { display:block; width:160px; height:28px; border-radius:3px; background:#000; }
+.td-wave canvas { display:block; width:160px; height:28px; border-radius:4px; background:#000; }
 .td-player { min-width:180px; }
 .td-player audio { width:180px; height:28px; }
 .td-dl .btn { padding:5px 10px; font-size:10px; }
@@ -119,23 +115,24 @@ table#calls-table td { padding:10px 12px; vertical-align:middle; }
 /* manual clips list */
 .clips-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
 #clips-list { display:flex; flex-direction:column; gap:8px; }
-.empty-state { padding:28px 20px; text-align:center; color:var(--muted); font-size:12px; border:1px dashed var(--border2); border-radius:var(--radius); letter-spacing:0.02em; }
+.empty-state { padding:32px 20px; text-align:center; color:var(--muted); font-size:12px; border:1px dashed rgba(99,140,210,0.18); border-radius:var(--radius); letter-spacing:0.02em; }
 .clip-item { display:flex; align-items:center; gap:14px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); transition:border-color 0.15s; }
 .clip-item:hover { border-color:var(--border2); }
 .clip-thumb { width:80px; height:45px; background:#000; border-radius:6px; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
 .clip-thumb canvas { width:80px; height:45px; display:block; }
-.clip-thumb.audio-thumb { background:#0d1420; border:1px solid rgba(91,143,212,0.2); }
+.clip-thumb.audio-thumb { background:#0b1120; border:1px solid rgba(91,143,212,0.2); }
 .audio-icon { color:var(--blue); opacity:0.6; }
 .clip-meta { flex:1; min-width:0; }
-.clip-name { font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px; font-family:'Fraunces',serif; font-style:italic; }
-.clip-time { font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; }
-.clip-duration { font-size:11px; color:var(--accent2); margin-left:6px; }
-.clip-mode-tag { font-size:10px; color:var(--blue); opacity:0.7; margin-left:6px; }
+.clip-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; font-family:'Inter',sans-serif; }
+.clip-time { font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; font-family:'DM Mono',monospace; }
+.clip-duration { font-size:11px; color:var(--accent); margin-left:6px; font-family:'DM Mono',monospace; }
+.clip-mode-tag { font-size:10px; color:var(--blue); opacity:0.7; margin-left:6px; font-family:'DM Mono',monospace; }
 .clip-actions { display:flex; gap:6px; align-items:center; }
 
-footer { text-align:center; padding:20px; border-top:1px solid var(--border); font-size:11px; color:var(--muted); letter-spacing:0.04em; position:fixed; bottom:0; left:0; right:0; background:rgba(10,10,11,0.92); backdrop-filter:blur(8px); z-index:20; }
+footer { text-align:center; padding:16px; border-top:1px solid var(--border); font-size:10px; color:#3d4f6e; letter-spacing:0.08em; position:fixed; bottom:0; left:0; right:0; background:rgba(5,8,15,0.92); backdrop-filter:blur(12px); z-index:20; font-family:'DM Mono',monospace; }
+footer span { color:var(--accent); }
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 .fade-up { animation:fadeUp 0.4s ease both; }
 .fade-up-1 { animation-delay:0.05s; }
 .fade-up-2 { animation-delay:0.1s; }
@@ -143,22 +140,28 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
 @keyframes spin { to{transform:rotate(360deg)} }
 .spinning { animation:spin 1s linear infinite; }
 
-::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:var(--bg); }
 ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
 
 @media(max-width:600px){
   main{padding:24px 16px 100px;}
-  header{padding:14px 16px;flex-wrap:wrap;gap:10px;}
+  header{padding:0 16px;height:auto;min-height:60px;}
   .controls{gap:8px;}
-  .btn{padding:8px 14px;}
+  .btn{padding:8px 12px;}
   .td-wave,.td-player{display:none;}
 }
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">Clip<span>Studio</span></div>
+  <a class="logo" href="dashboard.html">
+    <img class="logo-img" src="valemont-logo.jpeg" alt="Valemont">
+    <div class="logo-text-wrap">
+      <span class="logo-name">Valemont Sales Lab</span>
+      <span class="logo-sub">Recording Intelligence</span>
+    </div>
+  </a>
   <div class="header-right">
     <div class="mode-toggle" id="modeToggle">
       <button class="mode-btn active" id="camModeBtn" onclick="setMode('camera')">
@@ -213,6 +216,10 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
       <svg id="aiSpinIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0110 10"/><path d="M12 22a10 10 0 01-10-10"/><path d="M2 12a10 10 0 0110-10"/><path d="M22 12a10 10 0 01-10 10"/></svg>
       AI Auto-Clip
     </button>
+    <button class="btn" id="reRecordBtn" onclick="reRecord()" title="Save current calls to history and start a fresh recording">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.1-4.3L1 10"/></svg>
+      Re-Record
+    </button>
     <span class="time-badge" id="time-display">0:00</span>
   </div>
 
@@ -231,7 +238,11 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83"/></svg>
         Detected Calls
       </span>
-      <button class="btn ai-btn" id="dlAllAiBtn" style="display:none;margin-left:auto;padding:6px 12px;font-size:10px" onclick="downloadAllAi()">
+      <button class="btn ai-btn" id="mergeBtn" onclick="mergeSelectedCalls()" style="margin-left:auto;padding:6px 12px;font-size:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M8 6H5a2 2 0 00-2 2v8a2 2 0 002 2h3"/><path d="M16 6h3a2 2 0 012 2v8a2 2 0 01-2 2h-3"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+        Merge Selected <span class="merge-count" id="mergeCount">0</span>
+      </button>
+      <button class="btn ai-btn" id="dlAllAiBtn" style="display:none;padding:6px 12px;font-size:10px" onclick="downloadAllAi()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download All
       </button>
@@ -240,6 +251,7 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
       <table id="calls-table" style="display:none">
         <thead>
           <tr>
+            <th class="cb-cell"><input type="checkbox" id="selectAllCb" title="Select all" onchange="toggleSelectAll(this.checked)"></th>
             <th>#</th>
             <th>Start → End</th>
             <th>Duration</th>
@@ -262,464 +274,404 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
       <div id="playhead"></div>
     </div>
     <div class="clip-input-row">
-      <label>From <input type="number" id="clipStart" min="0" step="0.1" value="0"> s</label>
-      <label>To   <input type="number" id="clipEnd"   min="0" step="0.1" value="5"> s</label>
+      <label>Start (s) <input type="number" id="clipStart" min="0" step="0.1" placeholder="0.0"></label>
+      <label>End (s)   <input type="number" id="clipEnd"   min="0" step="0.1" placeholder="0.0"></label>
       <button class="btn" id="addClipBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Manual Clip
+        Add Clip
       </button>
-      <span class="hint-text" id="dur-label"></span>
+      <span class="hint-text">Or click the timeline to set points</span>
     </div>
+
     <div class="clips-header">
-      <div class="section-label" style="flex:1;margin-bottom:0">Manual Clips</div>
-      <button class="btn" id="dlAllBtn" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <div class="section-label" style="margin:0;flex:1">Manual Clips</div>
+      <button class="btn ai-btn" id="dlAllBtn" disabled style="padding:6px 12px;font-size:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download All
       </button>
     </div>
     <div id="clips-list">
-      <div class="empty-state">No manual clips yet — set start/end times above and click Add Manual Clip.</div>
+      <div class="empty-state" id="clips-empty">No clips yet — add one above or click the timeline.</div>
     </div>
   </div>
 </main>
 
-<footer>ClipStudio &nbsp;·&nbsp; All processing happens in your browser. Nothing is uploaded.</footer>
+<footer><span>Valemont Sales Lab</span> — Browser-native · Private · No data leaves your device</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script>
-/* ── Auth guard + account chrome ── */
-csShowConfigBanner();
-(async () => {
-  const _u = await Auth.requireAuth();
-  if (_u) { const _e = document.getElementById('user-email'); if (_e) _e.textContent = _u.email || ''; }
-})();
-const _signoutBtn = document.getElementById('signout-btn');
-if (_signoutBtn) _signoutBtn.onclick = async () => { await Auth.signOut(); window.location.replace('auth.html'); };
+/* ════════════════════════════════════════════════════════════
+   Valemont Sales Lab — Recording Studio
+   (All original ClipStudio logic preserved, only branding updated)
+   ════════════════════════════════════════════════════════════ */
 
-/* ── DOM ── */
-const preview          = document.getElementById('preview');
-const recorded         = document.getElementById('recorded');
-const placeholder      = document.getElementById('placeholder');
-const startCamBtn      = document.getElementById('startCamBtn');
-const recBtn           = document.getElementById('recBtn');
-const playBtn          = document.getElementById('playBtn');
-const aiClipBtn        = document.getElementById('aiClipBtn');
-const timeDisplay      = document.getElementById('time-display');
-const timeOverlay      = document.getElementById('time-overlay');
-const recIndicator     = document.getElementById('rec-indicator');
-const recLabel         = document.getElementById('rec-label');
-const statusEl         = document.getElementById('status');
-const timelineSection  = document.getElementById('timeline-section');
-const timelineBar      = document.getElementById('timeline-bar');
-const timelineProgress = document.getElementById('timeline-progress');
-const playhead         = document.getElementById('playhead');
-const clipsList        = document.getElementById('clips-list');
-const durLabel         = document.getElementById('dur-label');
-const dlAllBtn         = document.getElementById('dlAllBtn');
-const dlAllAiBtn       = document.getElementById('dlAllAiBtn');
-const clipStartInput   = document.getElementById('clipStart');
-const clipEndInput     = document.getElementById('clipEnd');
-const waveCanvas       = document.getElementById('waveCanvas');
-const voiceLabel       = document.getElementById('voice-label');
-const aiSection        = document.getElementById('ai-section');
-const aiProgressWrap   = document.getElementById('ai-progress-wrap');
-const aiProgressFill   = document.getElementById('aiProgressFill');
-const aiProgressLabel  = document.getElementById('aiProgressLabel');
-const aiSpinIcon       = document.getElementById('aiSpinIcon');
-const callsTable       = document.getElementById('calls-table');
-const callsTbody       = document.getElementById('calls-tbody');
-const aiEmpty          = document.getElementById('ai-empty');
+csShowConfigBanner();
+
+/* ── Auth ── */
+let currentUser = null;
+(async () => {
+  currentUser = await Auth.requireAuth();
+  if (!currentUser) return;
+  document.getElementById('user-email').textContent = currentUser.email || '';
+})();
+document.getElementById('signout-btn').onclick = async () => {
+  await Auth.signOut(); window.location.replace('auth.html');
+};
 
 /* ── State ── */
-let stream=null, recorder=null, chunks=[], recordedBlob=null, recordedUrl=null;
-let recording=false, recInterval=null, recSeconds=0;
-let clips=[], nextId=1, playInterval=null;
-let isVoiceMode=false;
-let audioCtx=null, analyser=null, waveAF=null, waveCtx=null;
-let aiCalls=[], nextAiId=1;
-let decodedBuffer=null; // cached full decode of recording
+let stream = null, mediaRecorder = null, recordedChunks = [];
+let isRecording = false, hasRecording = false;
+let startTime = 0, timerInterval = null;
+let decodedBuffer = null;
+let isVoiceMode = false;
+let waveCtx = null, waveAnim = null, waveAnalyser = null, waveStream = null;
 
-/* ── Utils ── */
-const fmt = s => { const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; };
-const setStatus = msg => statusEl.textContent = msg;
-const setProgress = (pct, label) => { aiProgressFill.style.width=pct+'%'; aiProgressLabel.textContent=label; };
+let clips = [], nextClipId = 1;
+let aiCalls = [], nextAiId = 1;
+let selectedCallIds = new Set();
+
+let timelineClickMode = null; // 'start' | 'end' | null
+let timelineAudio = null;
+
+/* ── Elements ── */
+const startCamBtn  = document.getElementById('startCamBtn');
+const recBtn       = document.getElementById('recBtn');
+const playBtn      = document.getElementById('playBtn');
+const aiClipBtn    = document.getElementById('aiClipBtn');
+const aiSpinIcon   = document.getElementById('aiSpinIcon');
+const timeDisplay  = document.getElementById('time-display');
+const statusEl     = document.getElementById('status');
+const placeholder  = document.getElementById('placeholder');
+const preview      = document.getElementById('preview');
+const recorded     = document.getElementById('recorded');
+const waveCanvas   = document.getElementById('waveCanvas');
+const recIndicator = document.getElementById('rec-indicator');
+const recLabel     = document.getElementById('rec-label');
+const timeOverlay  = document.getElementById('time-overlay');
+const voiceLabel   = document.getElementById('voice-label');
+const camLabel     = document.getElementById('cam-section-label');
+const modeToggle   = document.getElementById('modeToggle');
+const aiSection    = document.getElementById('ai-section');
+const callsTable   = document.getElementById('calls-table');
+const callsTbody   = document.getElementById('calls-tbody');
+const aiEmpty      = document.getElementById('ai-empty');
+const dlAllAiBtn   = document.getElementById('dlAllAiBtn');
+const reRecordBtn  = document.getElementById('reRecordBtn');
+const mergeBtn     = document.getElementById('mergeBtn');
+const mergeCount   = document.getElementById('mergeCount');
+const aiProgressWrap  = document.getElementById('ai-progress-wrap');
+const aiProgressLabel = document.getElementById('aiProgressLabel');
+const aiProgressFill  = document.getElementById('aiProgressFill');
+const timelineSection = document.getElementById('timeline-section');
+const timelineBar     = document.getElementById('timeline-bar');
+const timelineProgress= document.getElementById('timeline-progress');
+const clipsList       = document.getElementById('clips-list');
+const clipsEmpty      = document.getElementById('clips-empty');
+const dlAllBtn        = document.getElementById('dlAllBtn');
+const clipStartInput  = document.getElementById('clipStart');
+const clipEndInput    = document.getElementById('clipEnd');
+const addClipBtn      = document.getElementById('addClipBtn');
 
 /* ── Mode toggle ── */
-function setMode(mode){
-  if(recording) return;
-  isVoiceMode = (mode==='voice');
-  camModeBtn.className  = 'mode-btn' + (mode==='camera' ? ' active' : '');
-  voiceModeBtn.className= 'mode-btn' + (mode==='voice'  ? ' active voice-active' : '');
-  document.getElementById('cam-section-label').textContent = isVoiceMode ? 'Audio' : 'Camera';
-  if(stream){ stopWaveform(); stream.getTracks().forEach(t=>t.stop()); stream=null;
-    preview.srcObject=null; preview.style.display='none'; waveCanvas.style.display='none'; placeholder.style.display='flex'; }
-  if(isVoiceMode){
-    startCamBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Start Mic`;
-    setStatus('Voice Only mode — click "Start Mic" to begin.');
-  } else {
-    startCamBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14v-4z"/><rect x="1" y="5" width="14" height="14" rx="2"/></svg> Start Camera`;
-    setStatus('Click "Start Camera" to begin.');
-  }
+function setMode(m) {
+  isVoiceMode = m === 'voice';
+  document.getElementById('camModeBtn').classList.toggle('active', !isVoiceMode);
+  document.getElementById('voiceModeBtn').classList.toggle('active', isVoiceMode);
+  camLabel.textContent = isVoiceMode ? 'Voice Only' : 'Camera';
+  startCamBtn.innerHTML = isVoiceMode
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Start Mic`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14v-4z"/><rect x="1" y="5" width="14" height="14" rx="2"/></svg> Start Camera`;
+  if (stream) stopStream();
+  resetUI();
 }
 
-/* ── Start camera/mic ── */
-startCamBtn.onclick = async () => {
+function resetUI() {
+  hasRecording = false; isRecording = false;
+  recordedChunks = []; decodedBuffer = null; aiCalls = []; clips = [];
+  selectedCallIds = new Set();
+  recBtn.disabled = true; playBtn.disabled = true;
+  aiClipBtn.disabled = true; aiClipBtn.style.display = 'none';
+  reRecordBtn.style.display = 'none';
+  mergeBtn.style.display = 'none';
+  dlAllBtn.disabled = true; dlAllAiBtn.style.display = 'none';
+  timelineSection.style.display = 'none';
+  aiSection.style.display = 'none';
+  aiProgressWrap.style.display = 'none';
+  recorded.style.display = 'none'; preview.style.display = 'none';
+  waveCanvas.style.display = 'none';
+  placeholder.style.display = '';
+  voiceLabel.style.display = 'none';
+  recIndicator.style.display = 'none';
+  timeOverlay.style.display = 'none';
+  clipsList.innerHTML = ''; clipsList.appendChild(clipsEmpty);
+  clearInterval(timerInterval); timeDisplay.textContent = '0:00'; timeOverlay.textContent = '0:00';
+  const selectAllCb = document.getElementById('selectAllCb');
+  if (selectAllCb) selectAllCb.checked = false;
+  setStatus('Click "' + (isVoiceMode ? 'Start Mic' : 'Start Camera') + '" to begin' + (isVoiceMode ? '.' : ', or switch to Voice Only mode.'));
+}
+
+function stopStream() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  if (waveStream) { waveStream.getTracks().forEach(t => t.stop()); waveStream = null; }
+  cancelAnimationFrame(waveAnim); waveAnim = null;
+}
+
+function setStatus(msg) { statusEl.textContent = msg; }
+
+function fmt(s) {
+  s = +s; const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+/* ── Start camera / mic ── */
+startCamBtn.addEventListener('click', async () => {
   try {
-    const constraints = isVoiceMode ? {audio:true,video:false} : {video:true,audio:true};
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    if(isVoiceMode){
-      placeholder.style.display='none'; waveCanvas.style.display='block'; voiceLabel.style.display='block';
-      resizeWaveCanvas(); initWaveform();
+    if (isVoiceMode) {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      placeholder.style.display = 'none';
+      waveCanvas.style.display = 'block';
+      voiceLabel.style.display = 'block';
+      startWaveform(stream);
     } else {
-      preview.srcObject=stream; preview.style.display='block'; placeholder.style.display='none';
+      stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      placeholder.style.display = 'none';
+      preview.style.display = 'block';
+      preview.srcObject = stream;
     }
-    startCamBtn.disabled=true; recBtn.disabled=false;
-    setStatus(isVoiceMode ? 'Mic ready — press Record to start.' : 'Camera ready — press Record to start.');
-  } catch(e){ setStatus('Permission denied or device unavailable.'); }
-};
-
-/* ── Waveform ── */
-function resizeWaveCanvas(){
-  const wrap = document.getElementById('video-wrap');
-  waveCanvas.width  = wrap.clientWidth  * devicePixelRatio;
-  waveCanvas.height = wrap.clientHeight * devicePixelRatio;
-  waveCtx = waveCanvas.getContext('2d'); waveCtx.scale(devicePixelRatio, devicePixelRatio);
-}
-window.addEventListener('resize', () => { if(isVoiceMode && waveCanvas.style.display==='block') resizeWaveCanvas(); });
-
-function initWaveform(){
-  if(audioCtx) audioCtx.close();
-  audioCtx = new(window.AudioContext||window.webkitAudioContext)();
-  analyser = audioCtx.createAnalyser(); analyser.fftSize=2048; analyser.smoothingTimeConstant=0.82;
-  audioCtx.createMediaStreamSource(stream).connect(analyser);
-  drawWaveform();
-}
-function stopWaveform(){ if(waveAF){cancelAnimationFrame(waveAF);waveAF=null;} if(audioCtx){audioCtx.close();audioCtx=null;analyser=null;} }
-
-function drawWaveform(){
-  waveAF = requestAnimationFrame(drawWaveform);
-  if(!analyser||!waveCtx) return;
-  const W=waveCanvas.width/devicePixelRatio, H=waveCanvas.height/devicePixelRatio;
-  const bufLen=analyser.frequencyBinCount, data=new Uint8Array(bufLen);
-  analyser.getByteTimeDomainData(data);
-  waveCtx.fillStyle='#000'; waveCtx.fillRect(0,0,W,H);
-  let sum=0; for(let i=0;i<bufLen;i++){const v=(data[i]-128)/128;sum+=v*v;}
-  const rms=Math.sqrt(sum/bufLen);
-  const color = recording ? '#5b8fd4' : '#c8a96e';
-  waveCtx.lineJoin='round'; waveCtx.lineCap='round';
-  waveCtx.beginPath(); waveCtx.shadowColor=color; waveCtx.shadowBlur=20+rms*50;
-  waveCtx.strokeStyle=color; waveCtx.lineWidth=4;
-  const ds=Math.max(1,Math.floor(bufLen/300));
-  let first=true;
-  for(let i=0;i<bufLen;i+=ds){
-    const x=(i/bufLen)*W, y=(data[i]/128)*H/2;
-    if(first){waveCtx.moveTo(x,y);first=false;}else{waveCtx.lineTo(x,y);}
+    startCamBtn.disabled = true;
+    recBtn.disabled = false;
+    setStatus(isVoiceMode ? 'Microphone ready — click Record to start.' : 'Camera ready — click Record to start.');
+  } catch (e) {
+    setStatus('Access denied: ' + e.message);
   }
-  waveCtx.stroke(); waveCtx.shadowBlur=0;
-}
+});
 
-/* ── Recording ── */
-recBtn.onclick = () => recording ? stopRecording() : startRecording();
-
-function startRecording(){
-  chunks=[]; decodedBuffer=null;
-  const mime=getMime();
-  recorder = new MediaRecorder(stream, mime ? {mimeType:mime} : {});
-  recorder.ondataavailable = e => { if(e.data.size>0) chunks.push(e.data); };
-  recorder.onstop = finalize;
-  recorder.start(100);
-  recording=true; recSeconds=0;
-  recBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><rect x="6" y="6" width="12" height="12"/></svg> Stop`;
-  recBtn.className='btn danger-btn'; playBtn.disabled=true;
-  recIndicator.style.display='flex';
-  if(isVoiceMode){recIndicator.classList.add('voice-mode');recLabel.textContent='AUDIO REC';}
-  else{recIndicator.classList.remove('voice-mode');recLabel.textContent='REC';}
-  timeOverlay.style.display='block';
-  recInterval=setInterval(()=>{recSeconds++;const t=fmt(recSeconds);timeDisplay.textContent=t;timeOverlay.textContent=t;},1000);
-  setStatus('Recording in progress…');
-}
-
-function stopRecording(){
-  recorder.stop(); clearInterval(recInterval); recording=false;
-  recBtn.innerHTML=`<svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><circle cx="12" cy="12" r="6"/></svg> Record`;
-  recBtn.className='btn danger-btn'; recIndicator.style.display='none';
-  setStatus('Processing…');
-}
-
-function finalize(){
-  recordedBlob = new Blob(chunks, {type: getMime()||'audio/webm'});
-  if(recordedUrl) URL.revokeObjectURL(recordedUrl);
-  recordedUrl = URL.createObjectURL(recordedBlob);
-  if(!isVoiceMode){ recorded.src=recordedUrl; recorded.style.display='block'; waveCanvas.style.display='none'; preview.style.display='none'; }
-  else { recorded.src=recordedUrl; }
-  playBtn.disabled=false; timeOverlay.textContent=fmt(recSeconds);
-  setStatus(`Done — ${fmt(recSeconds)}. Hit "AI Auto-Clip" to split calls automatically.`);
-  timelineSection.style.display='block';
-  durLabel.textContent=`Total: ${fmt(recSeconds)}`;
-  clipStartInput.max=recSeconds; clipEndInput.max=recSeconds;
-  clipEndInput.value=Math.min(5,recSeconds).toFixed(1);
-  aiClipBtn.disabled=false; aiClipBtn.style.display='inline-flex';
-  setupTimeline();
-}
-
-function getMime(){
-  if(isVoiceMode) return ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
-  return ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
-}
-
-/* ── Playback ── */
-playBtn.onclick = () => {
-  if(isVoiceMode){ waveCanvas.style.display='block'; recorded.play(); playAudioWithWaveform(); }
-  else { preview.style.display='none'; recorded.style.display='block'; recorded.play(); }
-  startPlayhead();
-};
-function playAudioWithWaveform(){
-  try{
-    const pCtx=new(window.AudioContext||window.webkitAudioContext)();
-    const pAn=pCtx.createAnalyser(); pAn.fftSize=2048; pAn.smoothingTimeConstant=0.82;
-    const s2=pCtx.createMediaElementSource(recorded); s2.connect(pAn); s2.connect(pCtx.destination);
-    stopWaveform(); audioCtx=pCtx; analyser=pAn; drawWaveform();
-  }catch(e){}
-}
-function startPlayhead(){
-  if(playInterval) clearInterval(playInterval);
-  playInterval=setInterval(()=>{
-    const dur=recorded.duration||recSeconds; if(!dur) return;
-    const pct=(recorded.currentTime/dur)*100;
-    playhead.style.left=pct+'%'; timelineProgress.style.width=pct+'%';
-    timeDisplay.textContent=fmt(recorded.currentTime); timeOverlay.textContent=fmt(recorded.currentTime);
-  },80);
-}
-
-/* ── Timeline ── */
-function setupTimeline(){
-  timelineBar.onclick = e => {
-    if(e.target.closest('.clip-region')) return;
-    const rect=timelineBar.getBoundingClientRect();
-    const t=Math.max(0,Math.min(recSeconds,(e.clientX-rect.left)/rect.width*recSeconds));
-    clipStartInput.value=t.toFixed(1); clipEndInput.value=Math.min(recSeconds,t+5).toFixed(1);
-    if(recordedUrl){recorded.currentTime=t; playhead.style.left=((t/recSeconds)*100)+'%';}
-  };
-}
-function renderTimelineClips(){
-  document.querySelectorAll('.clip-region').forEach(el=>el.remove());
-  const dur=recSeconds||1;
-  clips.forEach(c=>{
-    const el=document.createElement('div'); el.className='clip-region';
-    el.style.left=(c.start/dur*100)+'%'; el.style.width=((c.end-c.start)/dur*100)+'%';
-    el.innerHTML=`<span class="clip-region-label">${c.label}</span>`; timelineBar.appendChild(el);
-  });
-  aiCalls.forEach(c=>{
-    const el=document.createElement('div'); el.className='clip-region ai-region';
-    el.style.left=(c.start/dur*100)+'%'; el.style.width=((c.end-c.start)/dur*100)+'%';
-    el.innerHTML=`<span class="clip-region-label">${c.label}</span>`; timelineBar.appendChild(el);
-  });
-}
-
-document.getElementById('addClipBtn').onclick = () => {
-  const start=parseFloat(clipStartInput.value), end=parseFloat(clipEndInput.value);
-  if(isNaN(start)||isNaN(end)||end<=start){ setStatus('⚠ Invalid range.'); return; }
-  if(end>recSeconds){ setStatus('⚠ End exceeds recording duration.'); return; }
-  const id=nextId++; clips.push({id,start,end,label:`Clip ${id}`,voiceMode:isVoiceMode});
-  renderClips(); renderTimelineClips();
-  setStatus(`Clip ${id} added (${fmt(start)} → ${fmt(end)}, ${(end-start).toFixed(1)}s).`);
-};
-
-function renderClips(){
-  if(!clips.length){ clipsList.innerHTML='<div class="empty-state">No manual clips yet — set start/end times above and click Add Manual Clip.</div>'; dlAllBtn.style.display='none'; return; }
-  dlAllBtn.style.display='inline-flex'; clipsList.innerHTML='';
-  clips.forEach(c=>{
-    const el=document.createElement('div'); el.className='clip-item';
-    const thumbHtml=c.voiceMode
-      ? `<div class="clip-thumb audio-thumb"><svg class="audio-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div>`
-      : `<div class="clip-thumb"><canvas id="cthumb-${c.id}"></canvas></div>`;
-    el.innerHTML=`${thumbHtml}
-      <div class="clip-meta">
-        <div class="clip-name">${c.label}</div>
-        <div class="clip-time">${fmt(c.start)} → ${fmt(c.end)}<span class="clip-duration">${(c.end-c.start).toFixed(1)}s</span>${c.voiceMode?'<span class="clip-mode-tag">· voice</span>':''}</div>
-      </div>
-      <div class="clip-actions">
-        <button class="btn" onclick="previewClip(${c.id})" style="padding:6px 10px;font-size:10px">▶ Play</button>
-        <button class="btn" onclick="downloadClip(${c.id})" style="padding:6px 10px;font-size:10px">↓ DL</button>
-        <button class="btn ghost-del" onclick="removeClip(${c.id})" title="Remove">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-        </button>
-      </div>`;
-    clipsList.appendChild(el);
-    if(!c.voiceMode) drawThumb(c, 'cthumb-'+c.id);
-  });
-}
-
-function drawThumb(c, canvasId){
-  const canvas=document.getElementById(canvasId); if(!canvas||!recordedUrl) return;
-  const ctx=canvas.getContext('2d'); const v=document.createElement('video');
-  v.src=recordedUrl; v.currentTime=c.start+(c.end-c.start)*0.4;
-  v.addEventListener('seeked',()=>{ ctx.drawImage(v,0,0,80,45); },{once:true}); v.load();
-}
-
-window.previewClip = id => {
-  const c=clips.find(x=>x.id===id); if(!c||!recordedUrl) return;
-  if(isVoiceMode){waveCanvas.style.display='block';recorded.style.display='none';}
-  else{recorded.style.display='block';preview.style.display='none';}
-  recorded.currentTime=c.start; recorded.play();
-  if(c.voiceMode) playAudioWithWaveform();
-  startPlayhead();
-  const stop=()=>{ if(recorded.currentTime>=c.end){recorded.pause();recorded.removeEventListener('timeupdate',stop);} };
-  recorded.addEventListener('timeupdate',stop);
-  setStatus(`Previewing ${c.label}…`);
-};
-window.removeClip = id => { clips=clips.filter(x=>x.id!==id); renderClips(); renderTimelineClips(); setStatus('Clip removed.'); };
-window.downloadClip = async id => {
-  const c=clips.find(x=>x.id===id); if(!c) return;
-  setStatus(`Exporting ${c.label}…`);
-  try{ const blob=await extractClipBlob(c.start,c.end); download(blob, c.label.replace(' ','-').toLowerCase()+'.wav'); setStatus(`${c.label} downloaded.`); }
-  catch(e){ setStatus('Export failed — try Chrome.'); }
-};
-dlAllBtn.onclick = async () => {
-  for(const c of clips){
-    setStatus(`Exporting ${c.label}…`);
-    try{ const blob=await extractClipBlob(c.start,c.end); await new Promise(r=>setTimeout(r,200)); download(blob,c.label.replace(' ','-').toLowerCase()+'.wav'); }catch(e){}
-  }
-  setStatus('All clips exported.');
-};
-
-/* ════════════════════════════════════════
-   AI AUTO-CLIP
-   1. Decode full audio to PCM (OfflineAudioContext)
-   2. RMS energy per 50ms frame
-   3. Smoothed 7-frame rolling average
-   4. Silence gaps > 2s = call boundary
-   5. Slice PCM with OfflineAudioContext (instant, no playback)
-   6. Encode each slice to WAV in-memory
-   Total: ~100-300ms for any length recording
-════════════════════════════════════════ */
-aiClipBtn.onclick = () => runAiClip();
-
-async function runAiClip(){
-  if(!recordedBlob) return;
-  aiClipBtn.disabled=true; aiSpinIcon.classList.add('spinning');
-  aiSection.style.display='block';
-  aiProgressWrap.style.display='block';
-  callsTable.style.display='none'; callsTbody.innerHTML='';
-  aiEmpty.style.display='none'; dlAllAiBtn.style.display='none';
-  setProgress(0,'Decoding audio…');
-
-  try{
-    // Step 1: decode
-    if(!decodedBuffer){
-      const ab = await recordedBlob.arrayBuffer();
-      decodedBuffer = await new Promise((res,rej)=>{
-        const tmp=new(window.AudioContext||window.webkitAudioContext)();
-        tmp.decodeAudioData(ab.slice(0), buf=>{ tmp.close(); res(buf); }, e=>{ tmp.close(); rej(e); });
-      });
+/* ── Waveform visualizer ── */
+function startWaveform(src) {
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const src_node = ac.createMediaStreamSource(src);
+  waveAnalyser = ac.createAnalyser(); waveAnalyser.fftSize = 256;
+  src_node.connect(waveAnalyser);
+  const canvas = waveCanvas; const ctx = canvas.getContext('2d');
+  const data = new Uint8Array(waveAnalyser.frequencyBinCount);
+  function draw() {
+    waveAnim = requestAnimationFrame(draw);
+    waveAnalyser.getByteTimeDomainData(data);
+    canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#3665cc'; ctx.lineWidth = 2; ctx.beginPath();
+    const slice = canvas.width / data.length;
+    let x = 0;
+    for (let i = 0; i < data.length; i++) {
+      const v = data[i] / 128; const y = v * canvas.height / 2;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      x += slice;
     }
-    setProgress(25,'Detecting voice activity…');
+    ctx.lineTo(canvas.width, canvas.height / 2); ctx.stroke();
+  }
+  draw();
+}
 
-    const sr       = decodedBuffer.sampleRate;
-    const pcm      = decodedBuffer.getChannelData(0);
-    const totalDur = decodedBuffer.duration;
-    const FRAME    = Math.floor(sr * 0.05); // 50ms frames
-    const nFrames  = Math.ceil(pcm.length / FRAME);
+/* ── Record ── */
+recBtn.addEventListener('click', () => {
+  if (!isRecording) startRecording(); else stopRecording();
+});
 
-    // Step 2: RMS per frame
+function startRecording() {
+  recordedChunks = []; aiCalls = []; nextAiId = 1;
+  const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+    ? 'video/webm;codecs=vp9,opus'
+    : MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '';
+  const opts = mimeType ? { mimeType } : {};
+  try { mediaRecorder = new MediaRecorder(stream, opts); }
+  catch (e) { mediaRecorder = new MediaRecorder(stream); }
+  mediaRecorder.ondataavailable = e => { if (e.data.size) recordedChunks.push(e.data); };
+  mediaRecorder.onstop = onRecordingStop;
+  mediaRecorder.start(200);
+  isRecording = true;
+  startTime = Date.now();
+  recBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg> Stop';
+  recBtn.classList.remove('danger-btn'); recBtn.classList.add('accent');
+  recIndicator.style.display = 'flex';
+  recIndicator.classList.toggle('voice-mode', isVoiceMode);
+  recLabel.textContent = isVoiceMode ? 'REC (VOICE)' : 'REC';
+  timeOverlay.style.display = 'block';
+  timerInterval = setInterval(() => {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const t = fmt(elapsed);
+    timeDisplay.textContent = t; timeOverlay.textContent = t;
+  }, 500);
+  setStatus('Recording… click Stop when finished.');
+}
+
+function stopRecording() {
+  mediaRecorder.stop(); clearInterval(timerInterval);
+  isRecording = false;
+  recBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg> Record';
+  recBtn.classList.remove('accent'); recBtn.classList.add('danger-btn');
+  recIndicator.style.display = 'none';
+  timeOverlay.style.display = 'none';
+  setStatus('Processing recording…');
+}
+
+async function onRecordingStop() {
+  hasRecording = true;
+  playBtn.disabled = false;
+  const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
+
+  // Show recorded video / keep waveform for voice
+  if (!isVoiceMode) {
+    const url = URL.createObjectURL(blob);
+    recorded.src = url; recorded.style.display = 'block'; preview.style.display = 'none';
+  }
+
+  // Decode audio for AI
+  try {
+    const ab = await blob.arrayBuffer();
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    decodedBuffer = await ac.decodeAudioData(ab);
+    aiClipBtn.disabled = false; aiClipBtn.style.display = 'inline-flex';
+    timelineSection.style.display = 'block';
+    renderTimelineClips();
+    setStatus('Recording ready — review it or run AI Auto-Clip.');
+  } catch (e) {
+    setStatus('Recording saved (audio decode failed: ' + e.message + ')');
+  }
+
+  stopStream();
+  const elapsed = (Date.now() - startTime) / 1000;
+  timeDisplay.textContent = fmt(elapsed);
+}
+
+/* ── Review ── */
+playBtn.addEventListener('click', () => {
+  if (isVoiceMode && decodedBuffer) {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ac.createBufferSource(); src.buffer = decodedBuffer;
+    src.connect(ac.destination); src.start();
+  } else if (recorded.src) {
+    recorded.play();
+  }
+});
+
+/* ── AI Auto-Clip ── */
+aiClipBtn.addEventListener('click', runAI);
+
+async function runAI() {
+  if (!decodedBuffer) { setStatus('No recording to analyze.'); return; }
+  aiClipBtn.disabled = true; aiSpinIcon.classList.add('spinning');
+  aiSection.style.display = 'block';
+  aiProgressWrap.style.display = 'block';
+  callsTable.style.display = 'none'; aiEmpty.style.display = 'none';
+  dlAllAiBtn.style.display = 'none'; aiCalls = []; nextAiId = 1;
+
+  function setProgress(pct, label) {
+    aiProgressFill.style.width = pct + '%';
+    aiProgressLabel.textContent = label;
+  }
+
+  try {
+    setProgress(10, 'Decoding audio…');
+    const sr = decodedBuffer.sampleRate;
+    const raw = decodedBuffer.getChannelData(0);
+    const FRAME = Math.round(sr / 20); // 50ms frames
+    const nFrames = Math.floor(raw.length / FRAME);
     const rms = new Float32Array(nFrames);
-    for(let i=0;i<nFrames;i++){
-      const off=i*FRAME; let sum=0, n=0;
-      for(let j=0;j<FRAME && off+j<pcm.length;j++){ sum+=pcm[off+j]*pcm[off+j]; n++; }
-      rms[i]=n>0?Math.sqrt(sum/n):0;
+
+    setProgress(25, 'Computing energy…');
+    for (let i = 0; i < nFrames; i++) {
+      let sum = 0;
+      for (let j = 0; j < FRAME; j++) sum += raw[i * FRAME + j] ** 2;
+      rms[i] = Math.sqrt(sum / FRAME);
     }
 
-    // Step 3: smooth (7-frame window)
-    const smooth=new Float32Array(nFrames);
-    for(let i=0;i<nFrames;i++){
-      let s=0,n=0;
-      for(let k=Math.max(0,i-3);k<=Math.min(nFrames-1,i+3);k++){s+=rms[k];n++;}
-      smooth[i]=s/n;
+    setProgress(40, 'Smoothing…');
+    const W = 5; const smooth = new Float32Array(nFrames);
+    for (let i = 0; i < nFrames; i++) {
+      let s = 0, c = 0;
+      for (let w = -W; w <= W; w++) {
+        const idx = i + w;
+        if (idx >= 0 && idx < nFrames) { s += rms[idx]; c++; }
+      }
+      smooth[i] = s / c;
     }
 
-    setProgress(50,'Finding call boundaries…');
-
-    // Step 4: voiced spans — silence gap = 2s = 40 frames
-    const THRESHOLD   = 0.02;
-    const GAP_FRAMES  = 40;   // 2 seconds of silence
-    const MIN_FRAMES  = 100;  // 5 seconds minimum call length
-    const PAD_FRAMES  = 6;    // 0.3s padding each side
-
-    const spans=[];
-    let inVoice=false, spanStart=0, silCount=0;
-    for(let i=0;i<nFrames;i++){
-      if(smooth[i]>=THRESHOLD){
-        if(!inVoice){inVoice=true;spanStart=i;silCount=0;}
-        else{silCount=0;}
+    setProgress(50, 'Finding call boundaries…');
+    const THRESHOLD = 0.02, GAP_FRAMES = 40, MIN_FRAMES = 100, PAD_FRAMES = 6;
+    const spans = []; let inVoice = false, spanStart = 0, silCount = 0;
+    for (let i = 0; i < nFrames; i++) {
+      if (smooth[i] >= THRESHOLD) {
+        if (!inVoice) { inVoice = true; spanStart = i; silCount = 0; } else silCount = 0;
       } else {
-        if(inVoice){
+        if (inVoice) {
           silCount++;
-          if(silCount>=GAP_FRAMES){
-            const spanEnd=i-silCount;
-            if(spanEnd-spanStart>=MIN_FRAMES) spans.push({s:spanStart,e:spanEnd});
-            inVoice=false; silCount=0;
+          if (silCount >= GAP_FRAMES) {
+            const spanEnd = i - silCount;
+            if (spanEnd - spanStart >= MIN_FRAMES) spans.push({ s: spanStart, e: spanEnd });
+            inVoice = false; silCount = 0;
           }
         }
       }
     }
-    if(inVoice && nFrames-spanStart>=MIN_FRAMES) spans.push({s:spanStart,e:nFrames-1});
+    if (inVoice && nFrames - spanStart >= MIN_FRAMES) spans.push({ s: spanStart, e: nFrames - 1 });
+    setProgress(65, 'Slicing calls…');
 
-    setProgress(65,'Slicing calls…');
-
-    if(!spans.length){
-      aiEmpty.textContent='No distinct calls detected. Try recording with clearer audio or longer pauses between calls.';
-      aiEmpty.style.display='block';
-      aiProgressWrap.style.display='none';
-      aiClipBtn.disabled=false; aiSpinIcon.classList.remove('spinning');
+    if (!spans.length) {
+      aiEmpty.textContent = 'No distinct calls detected. Try recording with clearer audio or longer pauses between calls.';
+      aiEmpty.style.display = 'block';
+      aiProgressWrap.style.display = 'none';
+      aiClipBtn.disabled = false; aiSpinIcon.classList.remove('spinning');
       setStatus('No calls found — adjust recording or try again.');
       return;
     }
 
-    // Step 5+6: slice PCM → WAV blob for each span (instant, no playback)
-    aiCalls=[];
-    for(let i=0;i<spans.length;i++){
-      setProgress(65+Math.round(((i+1)/spans.length)*30), `Encoding call ${i+1} of ${spans.length}…`);
+    aiCalls = [];
+    for (let i = 0; i < spans.length; i++) {
+      setProgress(65 + Math.round(((i + 1) / spans.length) * 30), `Encoding call ${i + 1} of ${spans.length}…`);
       const startF = Math.max(0, spans[i].s - PAD_FRAMES);
-      const endF   = Math.min(nFrames-1, spans[i].e + PAD_FRAMES);
-      const startSample = startF * FRAME;
-      const endSample   = Math.min(pcm.length, endF * FRAME);
-      const startSec    = startSample / sr;
-      const endSec      = endSample   / sr;
-
-      const slicePcm = pcm.slice(startSample, endSample);
-      const wavBlob  = pcmToWavBlob(slicePcm, sr);
-      const blobUrl  = URL.createObjectURL(wavBlob);
-      aiCalls.push({id:nextAiId++, start:startSec, end:endSec, blobUrl, wavBlob, label:`Call ${i+1}`});
+      const endF = Math.min(nFrames - 1, spans[i].e + PAD_FRAMES);
+      const startSample = startF * FRAME, endSample = Math.min(raw.length, endF * FRAME);
+      const slicePcm = raw.slice(startSample, endSample);
+      const wavBlob = pcmToWavBlob(slicePcm, sr);
+      const blobUrl = URL.createObjectURL(wavBlob);
+      aiCalls.push({ id: nextAiId++, start: startSample / sr, end: endSample / sr, blobUrl, wavBlob, label: `Call ${i + 1}` });
     }
 
-    setProgress(100,'Done!');
-    renderCallsTable();
-    renderTimelineClips();
-    dlAllAiBtn.style.display='inline-flex';
-    setStatus(`Found ${aiCalls.length} call${aiCalls.length!==1?'s':''} — play or download below.`);
+    setProgress(100, 'Done!');
+    renderCallsTable(); renderTimelineClips();
+    dlAllAiBtn.style.display = 'inline-flex';
+    reRecordBtn.style.display = 'inline-flex';
+    setStatus(`Found ${aiCalls.length} call${aiCalls.length !== 1 ? 's' : ''} — play or download below.`);
     saveCallsToHistory();
-
-  }catch(err){
-    console.error(err);
-    aiEmpty.textContent='Analysis error: '+err.message;
-    aiEmpty.style.display='block';
+  } catch (err) {
+    aiEmpty.textContent = 'Analysis error: ' + err.message;
+    aiEmpty.style.display = 'block';
     setStatus('AI analysis failed.');
   }
-
-  aiProgressWrap.style.display='none';
-  aiClipBtn.disabled=false; aiSpinIcon.classList.remove('spinning');
+  aiProgressWrap.style.display = 'none';
+  aiClipBtn.disabled = false; aiSpinIcon.classList.remove('spinning');
 }
 
-/* ── Render table ── */
-function renderCallsTable(){
-  callsTbody.innerHTML='';
-  aiCalls.forEach(c=>{
-    const dur=(c.end-c.start).toFixed(1);
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td class="td-num">${c.id}</td>
-      <td class="td-time">${fmt(c.start)} → ${fmt(c.end)}</td>
+/* ── Render calls table ── */
+function renderCallsTable() {
+  callsTbody.innerHTML = '';
+  const selectAllCb = document.getElementById('selectAllCb');
+  // Remove any ids no longer in aiCalls
+  for (const id of selectedCallIds) {
+    if (!aiCalls.find(c => c.id === id)) selectedCallIds.delete(id);
+  }
+  updateMergeBtn();
+  aiCalls.forEach(c => {
+    const dur = (c.end - c.start).toFixed(1);
+    const checked = selectedCallIds.has(c.id);
+    const isMerged = (c.label || '').startsWith('Merged');
+    const tr = document.createElement('tr');
+    if (checked) tr.classList.add('selected-row');
+    tr.innerHTML = `
+      <td class="cb-cell"><input type="checkbox" class="call-cb" data-id="${c.id}" ${checked ? 'checked' : ''}></td>
+      <td class="td-num" style="${isMerged ? 'color:var(--accent)' : ''}">${c.id}</td>
+      <td class="td-time">${fmt(c.start)} → ${fmt(c.end)}${isMerged ? ' <span style="font-size:9px;color:var(--accent);letter-spacing:.06em">MERGED</span>' : ''}</td>
       <td class="td-dur">${dur}s</td>
       <td class="td-wave"><canvas id="tw-${c.id}" height="28"></canvas></td>
       <td class="td-player"><audio controls src="${c.blobUrl}" preload="none" style="width:180px;height:28px"></audio></td>
@@ -729,110 +681,309 @@ function renderCallsTable(){
           DL
         </button>
       </td>`;
+    // Checkbox change handler
+    tr.querySelector('.call-cb').addEventListener('change', function() {
+      if (this.checked) { selectedCallIds.add(c.id); tr.classList.add('selected-row'); }
+      else { selectedCallIds.delete(c.id); tr.classList.remove('selected-row'); }
+      updateMergeBtn();
+      if (selectAllCb) selectAllCb.checked = selectedCallIds.size === aiCalls.length;
+    });
     callsTbody.appendChild(tr);
     drawMiniWave(c);
   });
-  callsTable.style.display='table';
+  if (selectAllCb) selectAllCb.checked = aiCalls.length > 0 && selectedCallIds.size === aiCalls.length;
+  callsTable.style.display = 'table';
 }
 
-function drawMiniWave(c){
-  // Draw directly from the wavBlob (already decoded PCM slice)
-  const canvas=document.getElementById('tw-'+c.id); if(!canvas) return;
-  const ctx=canvas.getContext('2d');
-  const W=160, H=28;
-  canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
-  ctx.scale(devicePixelRatio,devicePixelRatio);
-  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
-  // Read PCM from the blob
-  c.wavBlob.arrayBuffer().then(ab=>{
-    const tmp=new(window.AudioContext||window.webkitAudioContext)();
-    return tmp.decodeAudioData(ab).then(buf=>{tmp.close();return buf;});
-  }).then(buf=>{
-    const data=buf.getChannelData(0);
-    const step=Math.max(1,Math.floor(data.length/W));
-    ctx.strokeStyle='#4caf7d'; ctx.lineWidth=1.5; ctx.beginPath();
-    for(let x=0;x<W;x++){
-      let peak=0;
-      for(let j=0;j<step;j++){const v=Math.abs(data[x*step+j]||0);if(v>peak)peak=v;}
-      const h=peak*(H-4);
-      ctx.moveTo(x,H/2-h/2); ctx.lineTo(x,H/2+h/2);
+function updateMergeBtn() {
+  const n = selectedCallIds.size;
+  mergeCount.textContent = n;
+  mergeBtn.style.display = n >= 2 ? 'inline-flex' : 'none';
+}
+
+window.toggleSelectAll = function(checked) {
+  selectedCallIds = checked ? new Set(aiCalls.map(c => c.id)) : new Set();
+  renderCallsTable();
+};
+
+function drawMiniWave(c) {
+  const canvas = document.getElementById('tw-' + c.id); if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 160, H = 28;
+  canvas.width = W * devicePixelRatio; canvas.height = H * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  c.wavBlob.arrayBuffer().then(ab => {
+    const tmp = new (window.AudioContext || window.webkitAudioContext)();
+    return tmp.decodeAudioData(ab).then(buf => { tmp.close(); return buf; });
+  }).then(buf => {
+    const data = buf.getChannelData(0);
+    const step = Math.max(1, Math.floor(data.length / W));
+    ctx.strokeStyle = '#3db87a'; ctx.lineWidth = 1.5; ctx.beginPath();
+    for (let x = 0; x < W; x++) {
+      let peak = 0;
+      for (let j = 0; j < step; j++) { const v = Math.abs(data[x * step + j] || 0); if (v > peak) peak = v; }
+      const h = peak * (H - 4);
+      ctx.moveTo(x, H / 2 - h / 2); ctx.lineTo(x, H / 2 + h / 2);
     }
     ctx.stroke();
-  }).catch(()=>{ ctx.fillStyle='rgba(76,175,125,0.3)'; ctx.fillRect(0,H/2-1,W,2); });
+  }).catch(() => { ctx.fillStyle = 'rgba(61,184,122,0.3)'; ctx.fillRect(0, H / 2 - 1, W, 2); });
 }
 
 window.downloadAiCall = id => {
-  const c=aiCalls.find(x=>x.id===id); if(!c) return;
+  const c = aiCalls.find(x => x.id === id); if (!c) return;
   download(c.wavBlob, `call-${c.id}.wav`);
   setStatus(`${c.label} downloaded.`);
 };
-function downloadAllAi(){
-  aiCalls.forEach((c,i)=>{ setTimeout(()=>download(c.wavBlob,`call-${c.id}.wav`), i*300); });
+function downloadAllAi() {
+  aiCalls.forEach((c, i) => { setTimeout(() => download(c.wavBlob, `call-${c.id}.wav`), i * 300); });
   setStatus('Downloading all calls…');
 }
 
-/* ════════════════════════════════════════
-   PCM → WAV encoder (in-memory, instant)
-   Writes a valid 16-bit mono/stereo WAV header
-════════════════════════════════════════ */
-function pcmToWavBlob(samples, sampleRate, numChannels=1){
-  const bitsPerSample=16;
-  const byteRate=sampleRate*numChannels*(bitsPerSample/8);
-  const blockAlign=numChannels*(bitsPerSample/8);
-  const dataLen=samples.length*2; // 16-bit = 2 bytes each
-  const buf=new ArrayBuffer(44+dataLen);
-  const view=new DataView(buf);
-  const writeStr=(off,str)=>{ for(let i=0;i<str.length;i++) view.setUint8(off+i,str.charCodeAt(i)); };
-  writeStr(0,'RIFF');
-  view.setUint32(4,36+dataLen,true);
-  writeStr(8,'WAVE');
-  writeStr(12,'fmt ');
-  view.setUint32(16,16,true);           // chunk size
-  view.setUint16(20,1,true);            // PCM
-  view.setUint16(22,numChannels,true);
-  view.setUint32(24,sampleRate,true);
-  view.setUint32(28,byteRate,true);
-  view.setUint16(32,blockAlign,true);
-  view.setUint16(34,bitsPerSample,true);
-  writeStr(36,'data');
-  view.setUint32(40,dataLen,true);
-  // clamp float32 → int16
-  let off=44;
-  for(let i=0;i<samples.length;i++){
-    const s=Math.max(-1,Math.min(1,samples[i]));
-    view.setInt16(off, s<0?s*0x8000:s*0x7FFF, true);
-    off+=2;
+/* ── Merge Selected Calls ── */
+window.mergeSelectedCalls = async function() {
+  const selected = aiCalls.filter(c => selectedCallIds.has(c.id));
+  if (selected.length < 2) { setStatus('Select at least 2 calls to merge.'); return; }
+
+  mergeBtn.disabled = true;
+  setStatus(`Merging ${selected.length} calls…`);
+
+  try {
+    // Sort by start time so audio is concatenated in order
+    selected.sort((a, b) => a.start - b.start);
+
+    // Decode all selected WAV blobs and extract their PCM
+    const sr = decodedBuffer ? decodedBuffer.sampleRate : 44100;
+    const pcmArrays = await Promise.all(selected.map(c =>
+      c.wavBlob.arrayBuffer().then(ab => {
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        return ac.decodeAudioData(ab).then(buf => { ac.close(); return buf.getChannelData(0).slice(); });
+      })
+    ));
+
+    // Concatenate PCM
+    const totalLen = pcmArrays.reduce((sum, a) => sum + a.length, 0);
+    const merged = new Float32Array(totalLen);
+    let offset = 0;
+    for (const arr of pcmArrays) { merged.set(arr, offset); offset += arr.length; }
+
+    const mergedWav = pcmToWavBlob(merged, sr);
+    const mergedUrl = URL.createObjectURL(mergedWav);
+    const mergedLabel = `Merged (${selected.map(c => c.label).join(' + ')})`;
+    const mergedCall = {
+      id: nextAiId++,
+      start: selected[0].start,
+      end: selected[selected.length - 1].end,
+      blobUrl: mergedUrl,
+      wavBlob: mergedWav,
+      label: mergedLabel
+    };
+
+    // Replace the merged source calls with the single merged call
+    const selectedIds = new Set(selected.map(c => c.id));
+    selectedCallIds.clear();
+    aiCalls = aiCalls.filter(c => !selectedIds.has(c.id));
+    aiCalls.push(mergedCall);
+    aiCalls.sort((a, b) => a.start - b.start);
+
+    renderCallsTable();
+    renderTimelineClips();
+
+    // Save merged call to history
+    await DB.addCall({
+      label: mergedLabel,
+      mode: isVoiceMode ? 'voice' : 'camera',
+      duration_seconds: +(mergedCall.end - mergedCall.start).toFixed(1),
+      blob: mergedWav
+    });
+
+    setStatus(`Merged into one call (${(mergedCall.end - mergedCall.start).toFixed(1)}s). Saved to history.`);
+  } catch (err) {
+    setStatus('Merge failed: ' + err.message);
   }
-  return new Blob([buf],{type:'audio/wav'});
+  mergeBtn.disabled = false;
+};
+
+/* ── Re-Record ── */
+window.reRecord = async function() {
+  if (!aiCalls.length) { resetUI(); startCamBtn.disabled = false; return; }
+  reRecordBtn.disabled = true;
+  setStatus('Saving calls to history…');
+  try {
+    await saveCallsToHistory();
+    setStatus('Saved. Starting fresh session…');
+  } catch (e) {
+    setStatus('Could not save to history — resetting anyway.');
+  }
+  stopStream();
+  resetUI();
+  startCamBtn.disabled = false;
+  reRecordBtn.disabled = false;
+};
+
+/* ── Timeline ── */
+function renderTimelineClips() {
+  const dur = decodedBuffer ? decodedBuffer.duration : 0;
+  // Remove existing clip regions
+  timelineBar.querySelectorAll('.clip-region').forEach(el => el.remove());
+  if (!dur) return;
+  clips.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'clip-region';
+    el.style.left = (c.start / dur * 100) + '%';
+    el.style.width = ((c.end - c.start) / dur * 100) + '%';
+    el.innerHTML = `<span class="clip-region-label">${c.name}</span>`;
+    timelineBar.appendChild(el);
+  });
+  aiCalls.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'clip-region ai-region';
+    el.style.left = (c.start / dur * 100) + '%';
+    el.style.width = ((c.end - c.start) / dur * 100) + '%';
+    el.innerHTML = `<span class="clip-region-label">${c.label}</span>`;
+    timelineBar.appendChild(el);
+  });
 }
 
-/* ── Manual clip export (also WAV now) ── */
-async function extractClipBlob(start, end){
-  if(!decodedBuffer) throw new Error('No decoded audio');
-  const sr=decodedBuffer.sampleRate;
-  const startS=Math.floor(start*sr), endS=Math.min(Math.ceil(end*sr), decodedBuffer.length);
-  const slice=decodedBuffer.getChannelData(0).slice(startS,endS);
+timelineBar.addEventListener('click', e => {
+  if (!decodedBuffer) return;
+  const rect = timelineBar.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  const t = pct * decodedBuffer.duration;
+  if (!timelineClickMode || timelineClickMode === 'end') {
+    clipStartInput.value = t.toFixed(1); timelineClickMode = 'end';
+  } else {
+    clipEndInput.value = t.toFixed(1); timelineClickMode = null;
+  }
+  timelineProgress.style.width = (pct * 100) + '%';
+});
+
+addClipBtn.addEventListener('click', async () => {
+  const s = parseFloat(clipStartInput.value), e = parseFloat(clipEndInput.value);
+  if (isNaN(s) || isNaN(e) || e <= s) { setStatus('Enter a valid start and end time.'); return; }
+  if (!decodedBuffer) { setStatus('No recording to clip.'); return; }
+  addClipBtn.disabled = true;
+  try {
+    const blob = await extractClipBlob(s, e);
+    const id = nextClipId++;
+    const clip = { id, start: s, end: e, blob, blobUrl: URL.createObjectURL(blob), name: `Clip ${id}` };
+    clips.push(clip);
+    renderClipsList(); renderTimelineClips();
+    dlAllBtn.disabled = false;
+    setStatus(`Clip ${id} added.`);
+  } catch (err) { setStatus('Clip error: ' + err.message); }
+  addClipBtn.disabled = false;
+});
+
+function renderClipsList() {
+  clipsList.innerHTML = '';
+  if (!clips.length) { clipsList.appendChild(clipsEmpty); return; }
+  clips.forEach(c => {
+    const dur = (c.end - c.start).toFixed(1);
+    const item = document.createElement('div');
+    item.className = 'clip-item';
+    const isAudio = isVoiceMode;
+    item.innerHTML = `
+      <div class="clip-thumb ${isAudio ? 'audio-thumb' : ''}">
+        ${isAudio
+          ? `<svg class="audio-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg>`
+          : `<canvas id="ct-${c.id}" width="80" height="45"></canvas>`}
+      </div>
+      <div class="clip-meta">
+        <div class="clip-name">${c.name}</div>
+        <div class="clip-time">${fmt(c.start)} → ${fmt(c.end)} <span class="clip-duration">${dur}s</span>${isVoiceMode ? '<span class="clip-mode-tag">voice</span>' : ''}</div>
+      </div>
+      <div class="clip-actions">
+        <audio controls src="${c.blobUrl}" preload="none" style="width:160px;height:28px"></audio>
+        <button class="btn ai-btn" onclick="downloadClip(${c.id})" style="padding:5px 10px;font-size:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          DL
+        </button>
+        <button class="btn ghost-del" onclick="removeClip(${c.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>`;
+    clipsList.appendChild(item);
+    if (!isAudio) {
+      const cv = document.getElementById('ct-' + c.id);
+      if (cv && decodedBuffer) drawThumb(cv, c.start, c.end);
+    }
+  });
+}
+
+function drawThumb(canvas, start, end) {
+  const ctx = canvas.getContext('2d'), W = 80, H = 45;
+  canvas.width = W * devicePixelRatio; canvas.height = H * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const sr = decodedBuffer.sampleRate;
+  const data = decodedBuffer.getChannelData(0).slice(Math.floor(start * sr), Math.ceil(end * sr));
+  const step = Math.max(1, Math.floor(data.length / W));
+  ctx.strokeStyle = '#3665cc'; ctx.lineWidth = 1.5; ctx.beginPath();
+  for (let x = 0; x < W; x++) {
+    let peak = 0;
+    for (let j = 0; j < step; j++) { const v = Math.abs(data[x * step + j] || 0); if (v > peak) peak = v; }
+    const h = peak * (H - 4);
+    ctx.moveTo(x, H / 2 - h / 2); ctx.lineTo(x, H / 2 + h / 2);
+  }
+  ctx.stroke();
+}
+
+window.downloadClip = id => {
+  const c = clips.find(x => x.id === id); if (!c) return;
+  download(c.blob, `${c.name.replace(/ /g, '-').toLowerCase()}.wav`);
+};
+
+window.removeClip = id => {
+  clips = clips.filter(c => c.id !== id);
+  if (!clips.length) dlAllBtn.disabled = true;
+  renderClipsList(); renderTimelineClips();
+};
+
+dlAllBtn.addEventListener('click', () => {
+  clips.forEach((c, i) => { setTimeout(() => download(c.blob, `${c.name.replace(/ /g, '-').toLowerCase()}.wav`), i * 300); });
+  setStatus('Downloading all clips…');
+});
+
+/* ── PCM → WAV ── */
+function pcmToWavBlob(samples, sampleRate, numChannels = 1) {
+  const bitsPerSample = 16, byteRate = sampleRate * numChannels * 2, blockAlign = numChannels * 2;
+  const dataLen = samples.length * 2;
+  const buf = new ArrayBuffer(44 + dataLen); const view = new DataView(buf);
+  const ws = (off, str) => { for (let i = 0; i < str.length; i++) view.setUint8(off + i, str.charCodeAt(i)); };
+  ws(0, 'RIFF'); view.setUint32(4, 36 + dataLen, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true); view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true); view.setUint16(34, bitsPerSample, true);
+  ws(36, 'data'); view.setUint32(40, dataLen, true);
+  let off = 44;
+  for (let i = 0; i < samples.length; i++) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true); off += 2;
+  }
+  return new Blob([buf], { type: 'audio/wav' });
+}
+
+async function extractClipBlob(start, end) {
+  if (!decodedBuffer) throw new Error('No decoded audio');
+  const sr = decodedBuffer.sampleRate;
+  const slice = decodedBuffer.getChannelData(0).slice(Math.floor(start * sr), Math.min(Math.ceil(end * sr), decodedBuffer.length));
   return pcmToWavBlob(slice, sr);
 }
 
-function download(blob, name){
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click();
+function download(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
 }
 
-/* ── Save detected calls to history (Supabase / demo store) ── */
+/* ── Save to history ── */
 const _savedCallKeys = new Set();
-async function saveCallsToHistory(){
-  for(const c of aiCalls){
-    if(_savedCallKeys.has(c.id)) continue;
+async function saveCallsToHistory() {
+  for (const c of aiCalls) {
+    if (_savedCallKeys.has(c.id)) continue;
     _savedCallKeys.add(c.id);
-    try{
-      await DB.addCall({
-        label: c.label,
-        mode: isVoiceMode ? 'voice' : 'camera',
-        duration_seconds: +(c.end - c.start).toFixed(1),
-        blob: c.wavBlob
-      });
-    }catch(e){ console.warn('Save to history failed:', e.message); _savedCallKeys.delete(c.id); }
+    try {
+      await DB.addCall({ label: c.label, mode: isVoiceMode ? 'voice' : 'camera', duration_seconds: +(c.end - c.start).toFixed(1), blob: c.wavBlob });
+    } catch (e) { console.warn('Save to history failed:', e.message); _savedCallKeys.delete(c.id); }
   }
 }
 </script>
