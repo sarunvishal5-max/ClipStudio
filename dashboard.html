@@ -1,15 +1,102 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Valemont Sales Lab — Dashboard</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="shared.css">
+
+<style>
+/* Dashboard */
+
+.dashboard-hero{
+    text-align:center;
+    margin:50px 0 70px;
+}
+
+.dashboard-title{
+    font-size:4.5rem;
+    font-weight:700;
+    letter-spacing:-2px;
+    line-height:1;
+    margin:0;
+}
+
+.dashboard-subtitle{
+    margin-top:18px;
+    font-size:1.15rem;
+    opacity:.7;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+    gap:30px;
+    max-width:1100px;
+    margin:0 auto;
+}
+
+.dashboard-card{
+    min-height:280px;
+    border-radius:24px;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:all .25s ease;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+    backdrop-filter:blur(10px);
+}
+
+.dashboard-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 50px rgba(0,0,0,.15);
+}
+
+.card-content{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:100%;
+    padding:40px;
+}
+
+.card-label{
+    font-size:3rem;
+    font-weight:700;
+    text-align:center;
+    line-height:1.05;
+    letter-spacing:-1px;
+    color:inherit;
+}
+
+@media (max-width:768px){
+
+    .dashboard-title{
+        font-size:3.2rem;
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
+    .card-label{
+        font-size:2.2rem;
+    }
+}
+</style>
 </head>
+
 <body>
+
 <header>
   <a class="logo" href="dashboard.html">
     <img class="logo-img" src="valemont-logo.jpeg" alt="Valemont">
@@ -18,62 +105,79 @@
       <span class="logo-sub">Recording Intelligence</span>
     </div>
   </a>
+
   <div class="header-right">
     <span class="user-email" id="user-email"></span>
-    <button class="btn ghost" id="signout-btn" type="button">Sign out</button>
+    <button class="btn ghost" id="signout-btn" type="button">
+      Sign out
+    </button>
   </div>
 </header>
 
 <div id="config-banner"></div>
 
 <main>
-  <div class="dash-hero fade">
+
+  <div class="dashboard-hero fade">
     <div class="dash-eyebrow">Valemont Sales Lab</div>
-    <h1>Dashboard</h1>
-    <p>Choose where you want to go.</p>
+
+    <h1 class="dashboard-title">
+      Dashboard
+    </h1>
+
+    <p class="dashboard-subtitle">
+      Select a workspace to continue.
+    </p>
   </div>
 
-  <div class="dash-grid fade fade-1">
-    <a class="dash-card" href="index.html">
-      <div class="ic">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14v-4z"/>
-          <rect x="1" y="5" width="14" height="14" rx="2"/>
-        </svg>
+  <div class="dashboard-grid fade fade-1">
+
+    <a class="dashboard-card" href="index.html">
+      <div class="card-content">
+        <span class="card-label">
+          Recording Studio
+        </span>
       </div>
-      <h2>Recording Studio</h2>
-      <p>Record camera or voice-only sessions. AI auto-detects and clips individual sales calls.</p>
     </a>
 
-    <a class="dash-card" href="history.html">
-      <div class="ic">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 3v5h5"/>
-          <path d="M3.05 13A9 9 0 106 5.3L3 8"/>
-          <path d="M12 7v5l4 2"/>
-        </svg>
+    <a class="dashboard-card" href="history.html">
+      <div class="card-content">
+        <span class="card-label">
+          Call History
+        </span>
       </div>
-      <h2>Call History</h2>
-      <p>Browse your most recent 100 calls with playback and download.</p>
     </a>
+
   </div>
+
 </main>
 
-<footer><span>Valemont Sales Lab</span> — Browser-native · Private · No data leaves your device</footer>
+<footer>
+  <span>Valemont Sales Lab</span>
+  —
+  Browser-native · Private · No data leaves your device
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+
 <script>
 csShowConfigBanner();
+
 (async () => {
   const user = await Auth.requireAuth();
   if (!user) return;
-  document.getElementById("user-email").textContent = user.email || "";
+
+  document.getElementById("user-email").textContent =
+    user.email || "";
 })();
+
 document.getElementById("signout-btn").onclick = async () => {
   await Auth.signOut();
   window.location.replace("auth.html");
 };
 </script>
+
 </body>
 </html>
+```
