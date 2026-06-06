@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -170,8 +171,13 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
       </button>
     </div>
     <div class="header-tag">Browser · Private</div>
+    <a class="btn ghost" href="dashboard.html">Dashboard</a>
+    <span class="user-email" id="user-email"></span>
+    <button class="btn ghost" id="signout-btn" type="button">Sign out</button>
   </div>
 </header>
+
+<div id="config-banner"></div>
 
 <main>
   <div class="fade-up">
@@ -279,7 +285,18 @@ footer { text-align:center; padding:20px; border-top:1px solid var(--border); fo
 
 <footer>ClipStudio &nbsp;·&nbsp; All processing happens in your browser. Nothing is uploaded.</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
+/* ── Auth guard + account chrome ── */
+csShowConfigBanner();
+(async () => {
+  const _u = await Auth.requireAuth();
+  if (_u) { const _e = document.getElementById('user-email'); if (_e) _e.textContent = _u.email || ''; }
+})();
+const _signoutBtn = document.getElementById('signout-btn');
+if (_signoutBtn) _signoutBtn.onclick = async () => { await Auth.signOut(); window.location.replace('auth.html'); };
+
 /* ── DOM ── */
 const preview          = document.getElementById('preview');
 const recorded         = document.getElementById('recorded');
@@ -681,6 +698,7 @@ async function runAiClip(){
     renderTimelineClips();
     dlAllAiBtn.style.display='inline-flex';
     setStatus(`Found ${aiCalls.length} call${aiCalls.length!==1?'s':''} — play or download below.`);
+    saveCallsToHistory();
 
   }catch(err){
     console.error(err);
@@ -799,6 +817,23 @@ async function extractClipBlob(start, end){
 
 function download(blob, name){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click();
+}
+
+/* ── Save detected calls to history (Supabase / demo store) ── */
+const _savedCallKeys = new Set();
+async function saveCallsToHistory(){
+  for(const c of aiCalls){
+    if(_savedCallKeys.has(c.id)) continue;
+    _savedCallKeys.add(c.id);
+    try{
+      await DB.addCall({
+        label: c.label,
+        mode: isVoiceMode ? 'voice' : 'camera',
+        duration_seconds: +(c.end - c.start).toFixed(1),
+        blob: c.wavBlob
+      });
+    }catch(e){ console.warn('Save to history failed:', e.message); _savedCallKeys.delete(c.id); }
+  }
 }
 </script>
 </body>

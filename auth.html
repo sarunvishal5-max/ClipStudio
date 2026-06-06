@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClipStudio — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<header>
+  <a class="logo" href="auth.html">Clip<span>Studio</span></a>
+  <div class="header-right">
+    <div class="header-tag">Record &amp; Export</div>
+  </div>
+</header>
+
+<div id="config-banner"></div>
+
+<main>
+  <div class="auth-wrap fade">
+    <div class="card">
+      <h1 id="title">Welcome back</h1>
+      <p class="sub" id="subtitle">Sign in to access your dashboard.</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" type="button">Sign in</button>
+        <button class="auth-tab" id="tab-signup" type="button">Create account</button>
+      </div>
+
+      <form id="auth-form" autocomplete="on">
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required minlength="6" autocomplete="current-password">
+        </div>
+        <button class="btn accent full" id="submit-btn" type="submit">Sign in</button>
+        <div class="form-msg" id="form-msg"></div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+let mode = "signin"; // or "signup"
+
+const titleEl   = document.getElementById("title");
+const subEl     = document.getElementById("subtitle");
+const submitBtn = document.getElementById("submit-btn");
+const msgEl     = document.getElementById("form-msg");
+const tabSignin = document.getElementById("tab-signin");
+const tabSignup = document.getElementById("tab-signup");
+const pwInput   = document.getElementById("password");
+
+csShowConfigBanner();
+
+// If already signed in, skip straight to the dashboard.
+Auth.getUser().then(u => { if (u) window.location.replace("dashboard.html"); });
+
+function setMode(m) {
+  mode = m;
+  const signin = m === "signin";
+  tabSignin.classList.toggle("active", signin);
+  tabSignup.classList.toggle("active", !signin);
+  titleEl.textContent   = signin ? "Welcome back" : "Create your account";
+  subEl.textContent     = signin ? "Sign in to access your dashboard." : "Sign up to start recording and tracking calls.";
+  submitBtn.textContent = signin ? "Sign in" : "Create account";
+  pwInput.autocomplete  = signin ? "current-password" : "new-password";
+  setMsg("");
+}
+function setMsg(text, kind) {
+  msgEl.textContent = text || "";
+  msgEl.className = "form-msg" + (kind ? " " + kind : "");
+}
+
+tabSignin.onclick = () => setMode("signin");
+tabSignup.onclick = () => setMode("signup");
+
+document.getElementById("auth-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = pwInput.value;
+  if (!email || !password) { setMsg("Enter your email and password.", "error"); return; }
+
+  submitBtn.disabled = true;
+  setMsg(mode === "signin" ? "Signing in…" : "Creating account…");
+  try {
+    const res = mode === "signin"
+      ? await Auth.signIn(email, password)
+      : await Auth.signUp(email, password);
+
+    if (res.needsConfirm) {
+      setMsg("Account created — check your email to confirm, then sign in.", "ok");
+      setMode("signin");
+      submitBtn.disabled = false;
+      return;
+    }
+    setMsg("Success — redirecting…", "ok");
+    window.location.replace("dashboard.html");
+  } catch (err) {
+    setMsg(err.message || "Something went wrong.", "error");
+    submitBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
