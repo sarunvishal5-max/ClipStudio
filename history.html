@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClipStudio — Call History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<header>
+  <a class="logo" href="dashboard.html">Clip<span>Studio</span></a>
+  <div class="header-right">
+    <a class="btn ghost" href="dashboard.html">&larr; Dashboard</a>
+    <span class="user-email" id="user-email"></span>
+    <button class="btn ghost" id="signout-btn" type="button">Sign out</button>
+  </div>
+</header>
+
+<div id="config-banner"></div>
+
+<main>
+  <div class="history-head fade">
+    <div class="section-label" style="flex:1;margin-bottom:0">Call History &middot; last 100</div>
+    <span class="count-pill" id="count-pill">—</span>
+    <button class="btn ghost" id="refresh-btn" type="button">Refresh</button>
+  </div>
+
+  <div id="calls-table-wrap" class="fade">
+    <div class="loading" id="loading">Loading calls…</div>
+    <table id="history-table" style="display:none">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Duration</th>
+          <th>Mode</th>
+          <th>Audio</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="history-tbody"></tbody>
+    </table>
+    <div class="empty-state" id="empty" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 106 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+      <p>No calls yet. Head to the Record Dashboard and run AI Auto-Clip to log your first calls.</p>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+csShowConfigBanner();
+
+const tbody     = document.getElementById("history-tbody");
+const table     = document.getElementById("history-table");
+const loadingEl = document.getElementById("loading");
+const emptyEl   = document.getElementById("empty");
+const countPill = document.getElementById("count-pill");
+
+function fmtDur(s) {
+  s = Number(s) || 0;
+  const m = Math.floor(s / 60), sec = Math.round(s % 60);
+  return m + ":" + (sec < 10 ? "0" : "") + sec;
+}
+
+async function load() {
+  loadingEl.style.display = "block";
+  table.style.display = "none";
+  emptyEl.style.display = "none";
+  let calls = [];
+  try {
+    calls = await DB.listCalls();
+  } catch (e) {
+    loadingEl.textContent = "Could not load calls: " + (e.message || e);
+    return;
+  }
+  loadingEl.style.display = "none";
+  countPill.textContent = calls.length + " / 100";
+
+  if (!calls.length) { emptyEl.style.display = "block"; return; }
+
+  tbody.innerHTML = "";
+  calls.forEach((c, i) => {
+    const d = new Date(c.created_at);
+    const audioCell = c.audio_url
+      ? `<audio controls preload="none" src="${c.audio_url}"></audio>`
+      : `<span style="color:var(--muted)">—</span>`;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="td-num">${i + 1}</td>
+      <td>${d.toLocaleDateString()}</td>
+      <td class="td-time">${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td>
+      <td class="td-dur">${fmtDur(c.duration_seconds)}</td>
+      <td class="td-mode">${c.mode || "—"}</td>
+      <td class="td-audio">${audioCell}</td>
+      <td><button class="btn danger-btn" data-id="${c.id}" type="button" style="padding:5px 10px;font-size:10px">Delete</button></td>`;
+    tbody.appendChild(tr);
+  });
+  table.style.display = "table";
+
+  tbody.querySelectorAll("button[data-id]").forEach((btn) => {
+    btn.onclick = async () => {
+      btn.disabled = true;
+      try { await DB.deleteCall(btn.dataset.id); await load(); }
+      catch (e) { btn.disabled = false; alert("Delete failed: " + (e.message || e)); }
+    };
+  });
+}
+
+document.getElementById("refresh-btn").onclick = load;
+document.getElementById("signout-btn").onclick = async () => {
+  await Auth.signOut();
+  window.location.replace("auth.html");
+};
+
+(async () => {
+  const user = await Auth.requireAuth();
+  if (!user) return;
+  document.getElementById("user-email").textContent = user.email || "";
+  load();
+})();
+</script>
+</body>
+</html>
