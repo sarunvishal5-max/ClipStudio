@@ -13,9 +13,46 @@
 <link rel="stylesheet" href="shared.css">
 
 <style>
-.dashboard-hero{
+.dashboard-header-card{
+    position:relative;
+    overflow:hidden;
+
+    max-width:1100px;
+    margin:0 auto 40px;
+
+    border-radius:24px;
+    border:1px solid rgba(255,255,255,.08);
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(255,255,255,.06),
+            transparent 45%
+        ),
+        rgba(255,255,255,.03);
+
+    backdrop-filter:blur(12px);
+}
+
+.dashboard-header-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            135deg,
+            transparent 0%,
+            rgba(255,255,255,.015) 50%,
+            transparent 100%
+        );
+
+    pointer-events:none;
+}
+
+.dashboard-header-content{
     text-align:center;
-    margin:50px 0 70px;
+    padding:60px 40px;
 }
 
 .dashboard-title{
@@ -23,7 +60,7 @@
     font-weight:700;
     letter-spacing:-2px;
     line-height:1;
-    margin:0;
+    margin:10px 0 0;
     color:var(--text);
 }
 
@@ -112,7 +149,6 @@
 
 .card-content{
     display:flex;
-    flex-direction:column;
     align-items:center;
     justify-content:center;
 
@@ -131,16 +167,6 @@
     color:var(--text);
 }
 
-.card-desc{
-    margin-top:18px;
-
-    font-size:1rem;
-    opacity:.65;
-
-    max-width:320px;
-    line-height:1.5;
-}
-
 @media (max-width:768px){
 
     .dashboard-title{
@@ -153,6 +179,10 @@
 
     .card-label{
         font-size:2.2rem;
+    }
+
+    .dashboard-header-content{
+        padding:40px 24px;
     }
 }
 </style>
@@ -181,16 +211,20 @@
 
 <main>
 
-  <div class="dashboard-hero fade">
-    <div class="dash-eyebrow">Valemont Sales Lab</div>
+  <div class="dashboard-header-card fade">
+    <div class="card-accent"></div>
 
-    <h1 class="dashboard-title">
-      Dashboard
-    </h1>
+    <div class="dashboard-header-content">
+      <div class="dash-eyebrow">Valemont Sales Lab</div>
 
-    <p class="dashboard-subtitle">
-      Select a workspace to continue.
-    </p>
+      <h1 class="dashboard-title">
+        Dashboard
+      </h1>
+
+      <p class="dashboard-subtitle">
+        Select a workspace to continue.
+      </p>
+    </div>
   </div>
 
   <div class="dashboard-grid fade fade-1">
@@ -202,10 +236,6 @@
         <span class="card-label">
           Recording Studio
         </span>
-
-        <span class="card-desc">
-          Record, process, and analyze sales conversations.
-        </span>
       </div>
     </a>
 
@@ -215,10 +245,6 @@
       <div class="card-content">
         <span class="card-label">
           Call History
-        </span>
-
-        <span class="card-desc">
-          Review recordings, playback sessions, and exports.
         </span>
       </div>
     </a>
