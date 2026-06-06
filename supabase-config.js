@@ -13,8 +13,8 @@
    a backend (data stays only on this device).
    ════════════════════════════════════════════════════════════ */
 
-const SUPABASE_URL      = "";   // e.g. "https://abcdefgh.supabase.co"
-const SUPABASE_ANON_KEY = "";   // e.g. "eyJhbGciOi..."
+const SUPABASE_URL      = "https://boxfceehxtmujicxpfkt.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJveGZjZWVoeHRtdWppY3hwZmt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NTExMjcsImV4cCI6MjA5NjMyNzEyN30.aKg1XENrzTry9GXF8Yg3jkWYrSbhg5bePm-LZQufYq8";
 
 const MAX_CALLS = 100;          // keep only the most recent N calls
 
